@@ -22,20 +22,20 @@
       <!-- Dimensi (skala dari 6cm x 4cm x 3cm, faktor 0.15) -->
       <a-entity id="cuboid-group" position="0 0 0" scale="0.5 0.5 0.5">
 
-        <a-plane id="face-front"  width="0.9" height="0.45" material="color: #22d3ee; emissive: #22d3ee; emissiveIntensity: 0.4; roughness: 0.3; metalness: 0.15; opacity: 0.9" side="double"
+        <a-plane id="face-front"  width="0.9" height="0.45" material="color: #22d3ee; emissive: #22d3ee; emissiveIntensity: 0.22; roughness: 0.3; metalness: 0.15; opacity: 1" side="double"
                  position="0 0 0.3" rotation="0 0 0"></a-plane>
-        <a-plane id="face-back"   width="0.9" height="0.45" material="color: #ec4899; emissive: #ec4899; emissiveIntensity: 0.4; roughness: 0.3; metalness: 0.15; opacity: 0.9" side="double"
+        <a-plane id="face-back"   width="0.9" height="0.45" material="color: #ec4899; emissive: #ec4899; emissiveIntensity: 0.22; roughness: 0.3; metalness: 0.15; opacity: 1" side="double"
                  position="0 0 -0.3" rotation="0 180 0"></a-plane>
-        <a-plane id="face-right"  width="0.6" height="0.45" material="color: #a855f7; emissive: #a855f7; emissiveIntensity: 0.4; roughness: 0.3; metalness: 0.15; opacity: 0.9" side="double"
+        <a-plane id="face-right"  width="0.6" height="0.45" material="color: #a855f7; emissive: #a855f7; emissiveIntensity: 0.22; roughness: 0.3; metalness: 0.15; opacity: 1" side="double"
                  position="0.45 0 0" rotation="0 90 0"></a-plane>
-        <a-plane id="face-left"   width="0.6" height="0.45" material="color: #818cf8; emissive: #818cf8; emissiveIntensity: 0.4; roughness: 0.3; metalness: 0.15; opacity: 0.9" side="double"
+        <a-plane id="face-left"   width="0.6" height="0.45" material="color: #818cf8; emissive: #818cf8; emissiveIntensity: 0.22; roughness: 0.3; metalness: 0.15; opacity: 1" side="double"
                  position="-0.45 0 0" rotation="0 -90 0"></a-plane>
-        <a-plane id="face-top"    width="0.9" height="0.6" material="color: #67e8f9; emissive: #67e8f9; emissiveIntensity: 0.4; roughness: 0.3; metalness: 0.15; opacity: 0.9" side="double"
+        <a-plane id="face-top"    width="0.9" height="0.6" material="color: #67e8f9; emissive: #67e8f9; emissiveIntensity: 0.22; roughness: 0.3; metalness: 0.15; opacity: 1" side="double"
                  position="0 0.225 0" rotation="-90 0 0"></a-plane>
-        <a-plane id="face-bottom" width="0.9" height="0.6" material="color: #d946ef; emissive: #d946ef; emissiveIntensity: 0.4; roughness: 0.3; metalness: 0.15; opacity: 0.9" side="double"
+        <a-plane id="face-bottom" width="0.9" height="0.6" material="color: #d946ef; emissive: #d946ef; emissiveIntensity: 0.22; roughness: 0.3; metalness: 0.15; opacity: 1" side="double"
                  position="0 -0.225 0" rotation="90 0 0"></a-plane>
 
-        <a-animation attribute="rotation" to="0 360 0" dur="8000" easing="linear" repeat="indefinite"></a-animation>
+        <a-animation id="auto-spin" attribute="rotation" to="0 360 0" dur="8000" easing="linear" repeat="indefinite"></a-animation>
       </a-entity>
     </a-marker>
     <a-entity camera></a-entity>
@@ -66,8 +66,12 @@
   <div class="marker-hint"><span class="dot"></span> Awaiting marker — arahkan kamera ke Hiro marker</div>
 
   <div class="action-bar">
+    <button id="rotate-left-btn" class="btn btn-rotate">⟲</button>
     <button id="unfold-btn" class="btn btn-primary">📐 Unfold Net</button>
+    <button id="rotate-right-btn" class="btn btn-rotate">⟳</button>
   </div>
+
+  <button id="show-quiz-btn" class="show-quiz-btn">📝 Jawab Quiz Bila Anda Sedia</button>
 
   <div id="quiz-panel" class="quiz-panel">
     <div class="quiz-handle"></div>
@@ -93,6 +97,7 @@
     shape: "cuboid",
     studentName: localStorage.getItem("geosight_student_name") || "Guest",
     groupId: "cuboid-group",
+    autoSpinId: "auto-spin",
     mode: "morph",
 
     faces: [
