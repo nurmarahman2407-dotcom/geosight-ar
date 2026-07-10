@@ -22,20 +22,20 @@
       <a-entity id="cone-group" position="0 0 0" scale="0.5 0.5 0.5">
 
         <!-- Bentuk pepejal (r=5cm, h=12cm, slant=13cm — skala 0.08) -->
-        <a-cone id="cone-solid" radius-bottom="0.4" radius-top="0" height="0.96" material="color: #38bdf8; emissive: #38bdf8; emissiveIntensity: 0.4; roughness: 0.3; metalness: 0.15; opacity: 0.9"></a-cone>
+        <a-cone id="cone-solid" radius-bottom="0.4" radius-top="0" height="0.96" material="color: #38bdf8; emissive: #38bdf8; emissiveIntensity: 0.22; roughness: 0.3; metalness: 0.15; opacity: 1"></a-cone>
 
         <!-- Net: tapak bulat + sektor (permukaan melengkung "dibuka rata") -->
-        <a-circle id="cone-base"   radius="0.4" material="color: #a855f7; emissive: #a855f7; emissiveIntensity: 0.4; roughness: 0.3; metalness: 0.15; opacity: 0.9" side="double"
+        <a-circle id="cone-base"   radius="0.4" material="color: #a855f7; emissive: #a855f7; emissiveIntensity: 0.22; roughness: 0.3; metalness: 0.15; opacity: 1" side="double"
                   rotation="-90 0 0" visible="false"></a-circle>
         <!--
           Nota teknikal: sektor ni ANGGARAN permukaan melengkung kon yang
           "dibuka rata" — sudut sektor = (r/slant) × 360°. Guna a-circle
           dengan theta-length (A-Frame sokong ni terus, elak perlu custom mesh)
         -->
-        <a-circle id="cone-sector" radius="1.04" theta-length="138" material="color: #ec4899; emissive: #ec4899; emissiveIntensity: 0.4; roughness: 0.3; metalness: 0.15; opacity: 0.9" side="double"
+        <a-circle id="cone-sector" radius="1.04" theta-length="138" material="color: #ec4899; emissive: #ec4899; emissiveIntensity: 0.22; roughness: 0.3; metalness: 0.15; opacity: 1" side="double"
                   visible="false"></a-circle>
 
-        <a-animation attribute="rotation" to="0 360 0" dur="8000" easing="linear" repeat="indefinite"></a-animation>
+        <a-animation id="auto-spin" attribute="rotation" to="0 360 0" dur="8000" easing="linear" repeat="indefinite"></a-animation>
       </a-entity>
     </a-marker>
     <a-entity camera></a-entity>
@@ -66,8 +66,12 @@
   <div class="marker-hint"><span class="dot"></span> Awaiting marker — arahkan kamera ke Hiro marker</div>
 
   <div class="action-bar">
+    <button id="rotate-left-btn" class="btn btn-rotate">⟲</button>
     <button id="unfold-btn" class="btn btn-primary">📐 Unfold Net</button>
+    <button id="rotate-right-btn" class="btn btn-rotate">⟳</button>
   </div>
+
+  <button id="show-quiz-btn" class="show-quiz-btn">📝 Jawab Quiz Bila Anda Sedia</button>
 
   <div id="quiz-panel" class="quiz-panel">
     <div class="quiz-handle"></div>
@@ -93,6 +97,7 @@
     shape: "cone",
     studentName: localStorage.getItem("geosight_student_name") || "Guest",
     groupId: "cone-group",
+    autoSpinId: "auto-spin",
     mode: "reveal",
 
     solidId: "cone-solid",
