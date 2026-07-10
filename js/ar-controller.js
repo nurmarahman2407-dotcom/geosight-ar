@@ -13,33 +13,64 @@ class ARMissionController {
     this.shape = config.shape;                 // "cube", "cuboid", dst
     this.studentName = config.studentName || "Guest";
     this.mode = config.mode || (config.faces ? "morph" : "reveal");
-    this.groupId = config.groupId || null;      // id parent group — untuk sparkle burst
+    this.groupId = config.groupId || null;      // id parent group — rotate manual + sparkle burst
+    this.autoSpinId = config.autoSpinId || null; // id elemen <a-animation> auto-rotate awal
 
-    // Mode "morph" (Cube, Cuboid) — semua muka flat, boleh lipat/buka tepat
     this.faces = config.faces || null;
-
-    // Mode "reveal" (Cylinder, Cone, Pyramid, Sphere) — bentuk pepejal
-    // hilang, komponen net "meletup keluar" (exploded view) sebab
-    // bentuk melengkung tak boleh dilipat setepat kiub/kuboid
     this.solidId = config.solidId || null;
     this.netPieces = config.netPieces || null;
 
-    this.quiz = config.quiz;                   // {question, formulaHint, correctAnswer, explanation}
+    this.quiz = config.quiz;
     this.startTime = Date.now();
     this.unfolded = false;
+    this.currentRotationY = 0;
   }
 
   init() {
     const unfoldBtn = document.getElementById("unfold-btn");
     const checkBtn = document.getElementById("check-answer-btn");
+    const rotateLeftBtn = document.getElementById("rotate-left-btn");
+    const rotateRightBtn = document.getElementById("rotate-right-btn");
+    const showQuizBtn = document.getElementById("show-quiz-btn");
 
     if (unfoldBtn) unfoldBtn.addEventListener("click", () => this.toggleUnfold());
     if (checkBtn) checkBtn.addEventListener("click", () => this.checkAnswer());
+    if (rotateLeftBtn) rotateLeftBtn.addEventListener("click", () => this.rotate(-45));
+    if (rotateRightBtn) rotateRightBtn.addEventListener("click", () => this.rotate(45));
+    if (showQuizBtn) showQuizBtn.addEventListener("click", () => this.showQuiz());
 
     this.logAction("scene_loaded");
   }
 
+  /**
+   * Manual rotate — murid kawal sendiri sudut pandangan (bukan
+   * auto-spin berterusan). Sekali sahaja tekan rotate, auto-spin awal
+   * dihentikan terus supaya bentuk tak "melawan" kawalan murid.
+   */
+  rotate(degrees) {
+    this._stopAutoSpin();
+    if (!this.groupId) return;
+    const group = document.getElementById(this.groupId);
+    if (!group) return;
+
+    this.currentRotationY += degrees;
+    group.setAttribute(
+      "animation__manualrotate",
+      `property: rotation; to: 0 ${this.currentRotationY} 0; dur: 500; easing: easeOutQuad`
+    );
+  }
+
+  _stopAutoSpin() {
+    if (!this.autoSpinId) return;
+    const spinEl = document.getElementById(this.autoSpinId);
+    if (spinEl && spinEl.parentNode) {
+      spinEl.parentNode.removeChild(spinEl);
+      this.autoSpinId = null; // dah dibuang, elak cuba buang lagi
+    }
+  }
+
   toggleUnfold() {
+    this._stopAutoSpin(); // henti auto-spin sebaik unfold ditekan — supaya net senang dikaji, tak berpusing sendiri
     this.unfolded = !this.unfolded;
 
     if (this.mode === "morph") {
@@ -53,13 +84,14 @@ class ARMissionController {
     const btn = document.getElementById("unfold-btn");
     if (btn) btn.textContent = this.unfolded ? "🔄 Fold Back" : "📐 Unfold Net";
 
+    // Tunjuk/sembunyi butang "Jawab Quiz" — quiz TAK auto-muncul lagi,
+    // murid kawal sendiri bila nak beralih dari explore ke assessment
+    const showQuizBtn = document.getElementById("show-quiz-btn");
+    if (showQuizBtn) showQuizBtn.style.display = this.unfolded ? "flex" : "none";
+
     this.logAction(this.unfolded ? "unfold_viewed" : "fold_viewed");
 
-    if (this.unfolded) {
-      setTimeout(() => this.showQuiz(), 1500);
-    } else {
-      this.hideQuiz();
-    }
+    if (!this.unfolded) this.hideQuiz();
   }
 
   /**
