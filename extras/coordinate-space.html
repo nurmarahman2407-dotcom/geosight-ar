@@ -128,17 +128,42 @@
 
   function clamp(v) { return Math.max(-5, Math.min(5, v)); }
 
+  function readCoord(id) {
+    const el = document.getElementById(id);
+    const n = Number(el.value);
+    return clamp(isNaN(n) ? 0 : n);
+  }
+
+  /**
+   * PENTING — pembetulan bug "koordinat asyik jadi 5,5,5":
+   * A-Frame punya komponen "line" ada quirk dikenali — bila kita
+   * setAttribute("line", ...) berulang kali pada entiti YANG SAMA,
+   * geometri kadang tersekat pada nilai pertama yang berjaya dilukis
+   * (tak refresh betul-betul). Penyelesaian selamat: BUANG entiti garis
+   * lama dan CIPTA BARU setiap kali plot — jamin selalu tepat.
+   */
+  function redrawGuideLine(id, startStr, endStr, color) {
+    const old = document.getElementById(id);
+    const parent = old.parentNode;
+    old.parentNode.removeChild(old);
+
+    const fresh = document.createElement("a-entity");
+    fresh.setAttribute("id", id);
+    fresh.setAttribute("line", `start: ${startStr}; end: ${endStr}; color: ${color}; opacity: 0.9`);
+    parent.appendChild(fresh);
+  }
+
   function plotPoint() {
-    const x = clamp(parseFloat(document.getElementById("input-x").value) || 0);
-    const y = clamp(parseFloat(document.getElementById("input-y").value) || 0);
-    const z = clamp(parseFloat(document.getElementById("input-z").value) || 0);
+    const x = readCoord("input-x");
+    const y = readCoord("input-y");
+    const z = readCoord("input-z");
 
     // Langkah 1: dari origin sepanjang paksi-X
-    document.getElementById("guide-x").setAttribute("line", `start: 0 0 0; end: ${x} 0 0; color: #f87171; opacity: 0.9`);
+    redrawGuideLine("guide-x", "0 0 0", `${x} 0 0`, "#f87171");
     // Langkah 2: dari hujung-X, gerak sepanjang paksi-Y
-    document.getElementById("guide-y").setAttribute("line", `start: ${x} 0 0; end: ${x} ${y} 0; color: #4ade80; opacity: 0.9`);
+    redrawGuideLine("guide-y", `${x} 0 0`, `${x} ${y} 0`, "#4ade80");
     // Langkah 3: dari situ, naik/turun sepanjang paksi-Z ke titik akhir
-    document.getElementById("guide-z").setAttribute("line", `start: ${x} ${y} 0; end: ${x} ${y} ${z}; color: #60a5fa; opacity: 0.9`);
+    redrawGuideLine("guide-z", `${x} ${y} 0`, `${x} ${y} ${z}`, "#60a5fa");
 
     const point = document.getElementById("plotted-point");
     point.setAttribute("position", `${x} ${y} ${z}`);
@@ -158,9 +183,9 @@
 
   function resetPoint() {
     ["input-x", "input-y", "input-z"].forEach((id) => (document.getElementById(id).value = 0));
-    ["guide-x", "guide-y", "guide-z"].forEach((id) =>
-      document.getElementById(id).setAttribute("line", "start: 0 0 0; end: 0 0 0")
-    );
+    redrawGuideLine("guide-x", "0 0 0", "0 0 0", "#f87171");
+    redrawGuideLine("guide-y", "0 0 0", "0 0 0", "#4ade80");
+    redrawGuideLine("guide-z", "0 0 0", "0 0 0", "#60a5fa");
     document.getElementById("plotted-point").setAttribute("visible", "false");
     document.getElementById("coord-readout").textContent = "Titik semasa: (0, 0, 0)";
   }
