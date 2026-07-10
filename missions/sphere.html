@@ -28,7 +28,7 @@
     <a-marker preset="hiro">
       <a-entity id="sphere-group" position="0 0 0" scale="0.5 0.5 0.5">
 
-        <a-sphere id="sphere-solid" radius="0.4" material="color: #34d399; emissive: #34d399; emissiveIntensity: 0.4; roughness: 0.3; metalness: 0.15; opacity: 0.9"></a-sphere>
+        <a-sphere id="sphere-solid" radius="0.4" material="color: #34d399; emissive: #34d399; emissiveIntensity: 0.22; roughness: 0.3; metalness: 0.15; opacity: 1"></a-sphere>
 
         <!--
           Nota teknikal PENTING: sfera TAK BOLEH dibuka jadi rata sepenuhnya
@@ -36,14 +36,14 @@
           drpd bentuk lain. Kita tunjuk "orange-peel gores" (6 jalur) sebagai
           anggaran visual sahaja, bukan net tepat.
         -->
-        <a-sphere id="gore-0" radius="0.4" phi-start="0"   phi-length="60" theta-length="180" material="color: #22d3ee; emissive: #22d3ee; emissiveIntensity: 0.4; roughness: 0.3; metalness: 0.15; opacity: 0.9" visible="false"></a-sphere>
-        <a-sphere id="gore-1" radius="0.4" phi-start="60"  phi-length="60" theta-length="180" material="color: #a855f7; emissive: #a855f7; emissiveIntensity: 0.4; roughness: 0.3; metalness: 0.15; opacity: 0.9" visible="false"></a-sphere>
-        <a-sphere id="gore-2" radius="0.4" phi-start="120" phi-length="60" theta-length="180" material="color: #ec4899; emissive: #ec4899; emissiveIntensity: 0.4; roughness: 0.3; metalness: 0.15; opacity: 0.9" visible="false"></a-sphere>
-        <a-sphere id="gore-3" radius="0.4" phi-start="180" phi-length="60" theta-length="180" material="color: #22d3ee; emissive: #22d3ee; emissiveIntensity: 0.4; roughness: 0.3; metalness: 0.15; opacity: 0.9" visible="false"></a-sphere>
-        <a-sphere id="gore-4" radius="0.4" phi-start="240" phi-length="60" theta-length="180" material="color: #a855f7; emissive: #a855f7; emissiveIntensity: 0.4; roughness: 0.3; metalness: 0.15; opacity: 0.9" visible="false"></a-sphere>
-        <a-sphere id="gore-5" radius="0.4" phi-start="300" phi-length="60" theta-length="180" material="color: #ec4899; emissive: #ec4899; emissiveIntensity: 0.4; roughness: 0.3; metalness: 0.15; opacity: 0.9" visible="false"></a-sphere>
+        <a-sphere id="gore-0" radius="0.4" phi-start="0"   phi-length="60" theta-length="180" material="color: #22d3ee; emissive: #22d3ee; emissiveIntensity: 0.22; roughness: 0.3; metalness: 0.15; opacity: 1" visible="false"></a-sphere>
+        <a-sphere id="gore-1" radius="0.4" phi-start="60"  phi-length="60" theta-length="180" material="color: #a855f7; emissive: #a855f7; emissiveIntensity: 0.22; roughness: 0.3; metalness: 0.15; opacity: 1" visible="false"></a-sphere>
+        <a-sphere id="gore-2" radius="0.4" phi-start="120" phi-length="60" theta-length="180" material="color: #ec4899; emissive: #ec4899; emissiveIntensity: 0.22; roughness: 0.3; metalness: 0.15; opacity: 1" visible="false"></a-sphere>
+        <a-sphere id="gore-3" radius="0.4" phi-start="180" phi-length="60" theta-length="180" material="color: #22d3ee; emissive: #22d3ee; emissiveIntensity: 0.22; roughness: 0.3; metalness: 0.15; opacity: 1" visible="false"></a-sphere>
+        <a-sphere id="gore-4" radius="0.4" phi-start="240" phi-length="60" theta-length="180" material="color: #a855f7; emissive: #a855f7; emissiveIntensity: 0.22; roughness: 0.3; metalness: 0.15; opacity: 1" visible="false"></a-sphere>
+        <a-sphere id="gore-5" radius="0.4" phi-start="300" phi-length="60" theta-length="180" material="color: #ec4899; emissive: #ec4899; emissiveIntensity: 0.22; roughness: 0.3; metalness: 0.15; opacity: 1" visible="false"></a-sphere>
 
-        <a-animation attribute="rotation" to="0 360 0" dur="8000" easing="linear" repeat="indefinite"></a-animation>
+        <a-animation id="auto-spin" attribute="rotation" to="0 360 0" dur="8000" easing="linear" repeat="indefinite"></a-animation>
       </a-entity>
     </a-marker>
     <a-entity camera></a-entity>
@@ -76,8 +76,11 @@
   <div class="marker-hint"><span class="dot"></span> Awaiting marker — arahkan kamera ke Hiro marker</div>
 
   <div class="action-bar">
+    <button id="rotate-left-btn" class="btn btn-rotate">⟲</button>
     <button id="unfold-btn" class="btn btn-primary">🍊 Peel Open</button>
   </div>
+
+  <button id="show-quiz-btn" class="show-quiz-btn">📝 Jawab Quiz Bila Anda Sedia</button>
 
   <div id="quiz-panel" class="quiz-panel">
     <div class="quiz-handle"></div>
@@ -103,6 +106,7 @@
     shape: "sphere",
     studentName: localStorage.getItem("geosight_student_name") || "Guest",
     groupId: "sphere-group",
+    autoSpinId: "auto-spin",
     mode: "reveal",
 
     solidId: "sphere-solid",
