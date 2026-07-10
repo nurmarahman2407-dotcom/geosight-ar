@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mission Reflection — GeoSight AR</title>
+<link rel="stylesheet" href="../css/style.css" />
+<style>
+  .hub { min-height: 100vh; padding: 40px 20px 60px; max-width: 480px; margin: 0 auto; }
+  .top-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .page-title { font-family: var(--font-display); font-weight: 700; font-size: 21px; margin: 0; }
+
+  .panel {
+    background: var(--panel-glass); backdrop-filter: blur(14px); border: 1px solid var(--border-glass);
+    border-radius: 18px; padding: 18px 20px; margin-bottom: 14px;
+  }
+  .q-label { font-family: var(--font-body); font-size: 14px; font-weight: 600; margin-bottom: 8px; display: block; }
+  textarea, select {
+    width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border-glass);
+    background: rgba(255,255,255,0.04); color: var(--text-light); font-family: var(--font-body);
+    font-size: 14px; resize: vertical; min-height: 70px;
+  }
+  select { min-height: auto; }
+  textarea:focus, select:focus { outline: none; border-color: var(--aurora-cyan); }
+
+  .confidence-row { display: flex; align-items: center; gap: 10px; }
+  input[type="range"] { flex: 1; accent-color: var(--aurora-cyan); }
+  .confidence-val { font-family: var(--font-mono); font-size: 18px; color: var(--aurora-cyan); min-width: 44px; text-align: center; }
+
+  .save-msg { display: none; text-align: center; font-family: var(--font-mono); font-size: 13px; color: var(--success); margin-top: 10px; }
+</style>
+</head>
+<body>
+
+<div class="hub">
+  <div class="top-row">
+    <a href="../dashboard/student.html" class="back-btn" style="position:static;">←</a>
+    <h1 class="page-title">💭 Mission Reflection</h1>
+    <span style="width:38px"></span>
+  </div>
+
+  <div class="panel">
+    <label class="q-label">1. Bentuk 3D manakah paling mudah anda fahami? Kenapa?</label>
+    <select id="easiest-shape">
+      <option value="">-- Pilih bentuk --</option>
+      <option value="cube">🧊 Cube</option>
+      <option value="cuboid">📦 Cuboid</option>
+      <option value="cylinder">🥫 Cylinder</option>
+      <option value="pyramid">🔺 Pyramid</option>
+      <option value="cone">🍦 Cone</option>
+      <option value="sphere">🌐 Sphere</option>
+    </select>
+  </div>
+
+  <div class="panel">
+    <label class="q-label">2. Apakah cabaran terbesar anda dalam mengira luas permukaan/isipadu?</label>
+    <textarea id="biggest-challenge" placeholder="Tulis refleksi anda di sini..."></textarea>
+  </div>
+
+  <div class="panel">
+    <label class="q-label">3. Bagaimana anda akan gunakan pengetahuan ni dalam kehidupan sebenar?</label>
+    <textarea id="real-life-application" placeholder="Tulis refleksi anda di sini..."></textarea>
+  </div>
+
+  <div class="panel">
+    <label class="q-label">4. Skala 1-10, sejauh mana anda yakin menyelesaikan masalah geometri 3D?</label>
+    <div class="confidence-row">
+      <input type="range" id="confidence-slider" min="1" max="10" value="5" />
+      <span id="confidence-val" class="confidence-val">5</span>
+    </div>
+  </div>
+
+  <button id="save-btn" class="btn btn-primary" style="width:100%; justify-content:center;">💾 Save Reflection</button>
+  <div id="save-msg" class="save-msg">✅ Refleksi anda telah disimpan!</div>
+</div>
+
+<script src="../js/sheet-connector.js"></script>
+<script>
+  const studentName = localStorage.getItem("geosight_student_name") || "Guest";
+  const slider = document.getElementById("confidence-slider");
+  const sliderVal = document.getElementById("confidence-val");
+
+  slider.addEventListener("input", () => (sliderVal.textContent = slider.value));
+
+  document.getElementById("save-btn").addEventListener("click", async () => {
+    const payload = {
+      sheet: "Reflection_Log",
+      timestamp: new Date().toISOString(),
+      studentName: studentName,
+      easiestShape: document.getElementById("easiest-shape").value || "(tiada jawapan)",
+      biggestChallenge: document.getElementById("biggest-challenge").value || "(tiada jawapan)",
+      realLifeApplication: document.getElementById("real-life-application").value || "(tiada jawapan)",
+      confidenceLevel: slider.value
+    };
+
+    await SheetConnector.send(payload);
+
+    document.getElementById("save-msg").style.display = "block";
+    setTimeout(() => { window.location.href = "../dashboard/student.html"; }, 1400);
+  });
+</script>
+
+</body>
+</html>

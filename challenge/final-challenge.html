@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+<title>Final Challenge — GeoSight AR</title>
+<link rel="stylesheet" href="../css/style.css" />
+<script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.5/aframe/build/aframe-ar.js"></script>
+<style>
+  /* Styles khusus Final Challenge sahaja (extend style.css, tak ganggu page lain) */
+  .fc-card {
+    position: absolute; bottom: 0; left: 0; width: 100%; z-index: 30;
+    background: var(--panel-glass-strong); backdrop-filter: blur(20px);
+    border-radius: 24px 24px 0 0; padding: 18px 20px 24px;
+    box-shadow: 0 -10px 50px rgba(0,0,0,0.6); border-top: 1px solid var(--border-glass);
+    max-height: 62vh; overflow-y: auto;
+  }
+  .fc-progress-track { width: 100%; height: 5px; background: var(--border-glass); border-radius: 4px; overflow: hidden; margin-bottom: 14px; }
+  .fc-progress-fill { height: 100%; background: var(--aurora-gradient); border-radius: 4px; transition: width .4s ease; }
+  .fc-progress-label { font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); letter-spacing: 0.1em; margin-bottom: 10px; display: block; }
+  .fc-question { font-family: var(--font-body); font-size: 15px; line-height: 1.5; margin-bottom: 14px; }
+  .fc-ar-toggle {
+    display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 11px;
+    color: var(--aurora-cyan); background: rgba(34,211,238,0.1); border: 1px solid rgba(34,211,238,0.25);
+    padding: 6px 12px; border-radius: 20px; cursor: pointer; margin-bottom: 14px;
+  }
+  .fc-options { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+  .fc-option {
+    text-align: left; padding: 13px 16px; border-radius: 12px;
+    background: rgba(255,255,255,0.04); border: 1px solid var(--border-glass);
+    color: var(--text-light); font-family: var(--font-body); font-size: 14px; cursor: pointer;
+    transition: background .15s ease, border-color .15s ease;
+  }
+  .fc-option:hover { background: rgba(255,255,255,0.08); }
+  .fc-option.correct { background: rgba(52,211,153,0.15); border-color: var(--success); }
+  .fc-option.incorrect { background: rgba(248,113,113,0.15); border-color: var(--error); }
+  .fc-option:disabled { cursor: default; }
+  .fc-explanation {
+    display: none; font-family: var(--font-mono); font-size: 12px; color: var(--text-muted);
+    background: rgba(255,255,255,0.03); border-radius: 10px; padding: 10px 12px; margin-bottom: 12px;
+  }
+  .fc-next-btn { width: 100%; display: none; }
+</style>
+</head>
+<body>
+
+<div class="ar-wrapper">
+
+  <a-scene
+    embedded
+    arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix;"
+    vr-mode-ui="enabled: false"
+    renderer="logarithmicDepthBuffer: true;"
+  >
+    <a-marker preset="hiro">
+      <a-entity id="shape-group" position="0 0.3 0" scale="0.5 0.5 0.5">
+        <a-box      id="shape-cube"     width="1" height="1" depth="1" color="#22d3ee" opacity="0.9" visible="false"></a-box>
+        <a-box      id="shape-cuboid"   width="1.5" height="0.8" depth="1" color="#a855f7" opacity="0.9" visible="false"></a-box>
+        <a-cylinder id="shape-cylinder" radius="0.5" height="1" color="#ec4899" opacity="0.9" visible="false"></a-cylinder>
+        <a-cone     id="shape-pyramid"  radius-bottom="0.7" radius-top="0" height="1" segments-radial="4" color="#f59e0b" opacity="0.9" visible="false"></a-cone>
+        <a-cone     id="shape-cone"     radius-bottom="0.5" radius-top="0" height="1" color="#38bdf8" opacity="0.9" visible="false"></a-cone>
+        <a-sphere   id="shape-sphere"   radius="0.5" color="#34d399" opacity="0.9" visible="false"></a-sphere>
+
+        <a-animation attribute="rotation" to="0 360 0" dur="7000" easing="linear" repeat="indefinite"></a-animation>
+      </a-entity>
+    </a-marker>
+    <a-entity camera></a-entity>
+  </a-scene>
+
+  <div class="hud-frame">
+    <span class="hud-corner tl"></span><span class="hud-corner tr"></span>
+    <span class="hud-corner bl"></span><span class="hud-corner br"></span>
+    <div class="hud-scanline"></div>
+    <div class="hud-status"><span class="dot"></span> FINAL CHALLENGE</div>
+  </div>
+
+  <div class="overlay-top">
+    <a href="../index.html" class="back-btn">←</a>
+    <span class="mission-badge">MASTERY TEST</span>
+  </div>
+
+  <div class="mission-title-wrap">
+    <h1 class="mission-title">🚀 FINAL CHALLENGE</h1>
+  </div>
+
+  <div class="marker-hint"><span class="dot"></span> Tekan "View in AR" untuk lihat bentuk sebenar</div>
+
+  <!-- ═══════════ Kad Soalan ═══════════ -->
+  <div class="fc-card">
+    <div class="fc-progress-track"><div id="fc-progress-fill" class="fc-progress-fill" style="width:20%"></div></div>
+    <span id="fc-progress-label" class="fc-progress-label">QUESTION 1 OF 5</span>
+
+    <div id="fc-question" class="fc-question"></div>
+
+    <div id="fc-ar-toggle" class="fc-ar-toggle">👁️ View in AR</div>
+
+    <div id="fc-options" class="fc-options"></div>
+
+    <div id="fc-explanation" class="fc-explanation"></div>
+
+    <button id="fc-next-btn" class="btn btn-primary fc-next-btn">Next Challenge →</button>
+  </div>
+
+</div>
+
+<script src="../js/sheet-connector.js"></script>
+<script>
+  const studentName = localStorage.getItem("geosight_student_name") || "Guest";
+  const startTime = Date.now();
+
+  // ── 5 Soalan Final Challenge (reuse contoh sama dari 6 misi asal) ──
+  const questions = [
+    {
+      shape: "cube",
+      question: 'Sebuah dadu permainan mempunyai sisi 2.5 cm. Berapakah jumlah luas permukaannya?',
+      options: ["15 cm²", "37.5 cm²", "25 cm²", "75 cm²"],
+      correct: 1,
+      explanation: "SA = 6a² = 6 × (2.5)² = 6 × 6.25 = 37.5 cm²"
+    },
+    {
+      shape: "cuboid",
+      question: "Kotak hadiah berbentuk kuboid bersaiz 6cm × 4cm × 3cm. Berapakah jumlah luas permukaan kotak?",
+      options: ["72 cm²", "96 cm²", "108 cm²", "144 cm²"],
+      correct: 2,
+      explanation: "SA = 2(lw+lh+wh) = 2(24+18+12) = 2(54) = 108 cm²"
+    },
+    {
+      shape: "cylinder",
+      question: "Tangki air berbentuk silinder berjejari 4cm dan tinggi 10cm. Berapakah isipadu air (guna π = 3.14)?",
+      options: ["125.6 cm³", "251.2 cm³", "502.4 cm³", "1004.8 cm³"],
+      correct: 2,
+      explanation: "V = πr²h = 3.14 × 4² × 10 = 3.14 × 16 × 10 = 502.4 cm³"
+    },
+    {
+      shape: "pyramid",
+      question: "Piramid tapak persegi dengan sisi tapak 6cm dan tinggi sisi (slant height) 10cm. Berapakah jumlah luas permukaan?",
+      options: ["96 cm²", "120 cm²", "156 cm²", "180 cm²"],
+      correct: 2,
+      explanation: "SA = a² + 4(½ × a × l) = 36 + 4(30) = 36 + 120 = 156 cm²"
+    },
+    {
+      shape: "sphere",
+      question: "Belon berbentuk sfera berjejari 6cm. Berapakah jumlah luas permukaan (guna π = 3.14)?",
+      options: ["226.08 cm²", "452.16 cm²", "904.32 cm²", "113.04 cm²"],
+      correct: 1,
+      explanation: "SA = 4πr² = 4 × 3.14 × 36 = 452.16 cm²"
+    }
+  ];
+
+  let currentIndex = 0;
+  let score = 0;
+  let arVisible = false;
+
+  const shapeIds = ["cube", "cuboid", "cylinder", "pyramid", "cone", "sphere"];
+
+  function showShapeInAR(shapeKey) {
+    shapeIds.forEach((id) => {
+      const el = document.getElementById("shape-" + id);
+      if (el) el.setAttribute("visible", id === shapeKey && arVisible);
+    });
+  }
+
+  function renderQuestion() {
+    const q = questions[currentIndex];
+    document.getElementById("fc-progress-fill").style.width = ((currentIndex) / questions.length * 100) + "%";
+    document.getElementById("fc-progress-label").textContent = `QUESTION ${currentIndex + 1} OF ${questions.length}`;
+    document.getElementById("fc-question").textContent = q.question;
+    document.getElementById("fc-explanation").style.display = "none";
+    document.getElementById("fc-next-btn").style.display = "none";
+
+    const optionsDiv = document.getElementById("fc-options");
+    optionsDiv.innerHTML = "";
+    q.options.forEach((opt, i) => {
+      const btn = document.createElement("button");
+      btn.className = "fc-option";
+      btn.textContent = opt;
+      btn.addEventListener("click", () => selectAnswer(i));
+      optionsDiv.appendChild(btn);
+    });
+
+    arVisible = false;
+    document.getElementById("fc-ar-toggle").textContent = "👁️ View in AR";
+    showShapeInAR(q.shape);
+  }
+
+  document.getElementById("fc-ar-toggle").addEventListener("click", () => {
+    arVisible = !arVisible;
+    document.getElementById("fc-ar-toggle").textContent = arVisible ? "🙈 Hide AR" : "👁️ View in AR";
+    showShapeInAR(questions[currentIndex].shape);
+  });
+
+  function selectAnswer(selectedIndex) {
+    const q = questions[currentIndex];
+    const buttons = document.querySelectorAll(".fc-option");
+    buttons.forEach((b) => (b.disabled = true));
+
+    const isCorrect = selectedIndex === q.correct;
+    if (isCorrect) {
+      score++;
+      buttons[selectedIndex].classList.add("correct");
+    } else {
+      buttons[selectedIndex].classList.add("incorrect");
+      buttons[q.correct].classList.add("correct");
+    }
+
+    const expl = document.getElementById("fc-explanation");
+    expl.textContent = (isCorrect ? "✅ Betul! " : "❌ ") + q.explanation;
+    expl.style.display = "block";
+    document.getElementById("fc-next-btn").style.display = "block";
+
+    SheetConnector.send({
+      sheet: "Quiz_Log",
+      timestamp: new Date().toISOString(),
+      studentName: studentName,
+      shape: q.shape,
+      question: q.question,
+      answer: q.options[selectedIndex],
+      correct: isCorrect,
+      score: isCorrect ? 100 : 0,
+      timeSpentSec: Math.round((Date.now() - startTime) / 1000)
+    });
+  }
+
+  document.getElementById("fc-next-btn").addEventListener("click", () => {
+    currentIndex++;
+    if (currentIndex < questions.length) {
+      renderQuestion();
+    } else {
+      finishChallenge();
+    }
+  });
+
+  function finishChallenge() {
+    document.getElementById("fc-progress-fill").style.width = "100%";
+
+    let tier = "Silver";
+    if (score === questions.length) tier = "Gold";
+    else if (score >= Math.ceil(questions.length * 0.8)) tier = "Green";
+
+    const certId = "GS-" + Math.floor(10000000 + Math.random() * 89999999) + "-" + studentName.slice(0,3).toUpperCase();
+
+    SheetConnector.send({
+      sheet: "Certificate_Log",
+      timestamp: new Date().toISOString(),
+      studentName: studentName,
+      finalScore: Math.round((score / questions.length) * 100),
+      tier: tier,
+      certificateId: certId
+    });
+
+    const params = new URLSearchParams({
+      name: studentName,
+      score: score,
+      total: questions.length,
+      tier: tier,
+      certId: certId
+    });
+
+    window.location.href = "../certificate/badge-ar.html?" + params.toString();
+  }
+
+  renderQuestion();
+</script>
+
+</body>
+</html>

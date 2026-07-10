@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+<title>AR Coordinate Space — GeoSight AR</title>
+<link rel="stylesheet" href="../css/style.css" />
+
+<script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.5/aframe/build/aframe-ar.js"></script>
+</head>
+<body>
+
+<div class="ar-wrapper">
+
+  <!-- ═══════════ AR SCENE ═══════════ -->
+  <a-scene
+    embedded
+    arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix;"
+    vr-mode-ui="enabled: false"
+    renderer="logarithmicDepthBuffer: true;"
+  >
+    <a-marker preset="hiro">
+      <!--
+        Skala keseluruhan group ni 0.4 supaya nilai input (-5..5)
+        muat elok dalam pandangan AR (max jarak dari origin = 5 x 0.4 = 2 unit)
+      -->
+      <a-entity id="axis-group" scale="0.4 0.4 0.4">
+
+        <!-- ── 3 Paksi Utama (X=merah, Y=hijau, Z=biru) ── -->
+        <a-entity line="start: -5 0 0; end: 5 0 0; color: #ef4444"></a-entity>
+        <a-entity line="start: 0 -5 0; end: 0 5 0; color: #22c55e"></a-entity>
+        <a-entity line="start: 0 0 -5; end: 0 0 5; color: #3b82f6"></a-entity>
+
+        <!-- Penanda hujung paksi positif (bola kecil, bukan teks — elak isu font AR) -->
+        <a-sphere position="5 0 0"  radius="0.12" color="#ef4444"></a-sphere>
+        <a-sphere position="0 5 0"  radius="0.12" color="#22c55e"></a-sphere>
+        <a-sphere position="0 0 5"  radius="0.12" color="#3b82f6"></a-sphere>
+
+        <!-- Origin marker -->
+        <a-sphere position="0 0 0" radius="0.08" color="#ffffff" opacity="0.8"></a-sphere>
+
+        <!-- ── Guide lines (langkah bina titik: X → Y → Z) — mula tersembunyi ── -->
+        <a-entity id="guide-x" line="start: 0 0 0; end: 0 0 0; color: #f87171; opacity: 0.9"></a-entity>
+        <a-entity id="guide-y" line="start: 0 0 0; end: 0 0 0; color: #4ade80; opacity: 0.9"></a-entity>
+        <a-entity id="guide-z" line="start: 0 0 0; end: 0 0 0; color: #60a5fa; opacity: 0.9"></a-entity>
+
+        <!-- ── Titik akhir yang diplot ── -->
+        <a-sphere id="plotted-point" position="0 0 0" radius="0.16" color="#ec4899" visible="false">
+          <a-animation attribute="scale" from="1 1 1" to="1.3 1.3 1.3" direction="alternate"
+                       dur="700" repeat="indefinite" easing="easeInOutSine"></a-animation>
+        </a-sphere>
+
+      </a-entity>
+    </a-marker>
+
+    <a-entity camera></a-entity>
+  </a-scene>
+
+  <!-- ═══════════ OVERLAY HTML ═══════════ -->
+
+  <div class="hud-frame">
+    <span class="hud-corner tl"></span>
+    <span class="hud-corner tr"></span>
+    <span class="hud-corner bl"></span>
+    <span class="hud-corner br"></span>
+    <div class="hud-scanline"></div>
+    <div class="hud-status"><span class="dot"></span> AR MODE ACTIVE</div>
+  </div>
+
+  <div class="overlay-top">
+    <a href="../index.html" class="back-btn">←</a>
+    <span class="mission-badge">BONUS TOOL</span>
+  </div>
+
+  <div class="mission-title-wrap">
+    <h1 class="mission-title">🧭 AR COORDINATE SPACE</h1>
+  </div>
+
+  <div class="axis-legend">
+    <span class="chip"><span class="dot-x"></span> X-AXIS</span>
+    <span class="chip"><span class="dot-y"></span> Y-AXIS</span>
+    <span class="chip"><span class="dot-z"></span> Z-AXIS</span>
+  </div>
+
+  <div class="marker-hint"><span class="dot"></span> Arahkan kamera ke Hiro marker</div>
+
+  <div class="coord-panel">
+    <span class="coord-label">Masukkan Koordinat (x, y, z)</span>
+    <div class="coord-inputs">
+      <div class="coord-field x">
+        <label>X</label>
+        <input type="number" id="input-x" value="0" min="-5" max="5" step="1" />
+      </div>
+      <div class="coord-field y">
+        <label>Y</label>
+        <input type="number" id="input-y" value="0" min="-5" max="5" step="1" />
+      </div>
+      <div class="coord-field z">
+        <label>Z</label>
+        <input type="number" id="input-z" value="0" min="-5" max="5" step="1" />
+      </div>
+    </div>
+    <div class="coord-actions">
+      <button id="plot-btn" class="btn btn-primary">📍 Plot Titik</button>
+      <button id="reset-btn" class="btn btn-secondary">↺ Reset</button>
+    </div>
+    <div id="coord-readout" class="coord-readout">Titik semasa: (0, 0, 0)</div>
+  </div>
+
+</div>
+
+<script src="../js/sheet-connector.js"></script>
+<script>
+  /**
+   * AR Coordinate Space — logic ringkas (bukan reusable class sebab
+   * ni satu-satunya "misi" jenis ni, tak macam 6 misi bentuk yang guna
+   * ar-controller.js sama).
+   *
+   * Konsep paparan: apabila murid plot (x,y,z), garis panduan lukis
+   * SATU LANGKAH SATU MASA — gerak sepanjang paksi-X dulu, pusing ke
+   * paksi-Y, baru naik/turun paksi-Z — supaya murid nampak macam mana
+   * 3 nilai berasingan "dibina" jadi 1 titik dalam ruang.
+   */
+
+  const startTime = Date.now();
+  const studentName = localStorage.getItem("geosight_student_name") || "Guest";
+
+  function clamp(v) { return Math.max(-5, Math.min(5, v)); }
+
+  function plotPoint() {
+    const x = clamp(parseFloat(document.getElementById("input-x").value) || 0);
+    const y = clamp(parseFloat(document.getElementById("input-y").value) || 0);
+    const z = clamp(parseFloat(document.getElementById("input-z").value) || 0);
+
+    // Langkah 1: dari origin sepanjang paksi-X
+    document.getElementById("guide-x").setAttribute("line", `start: 0 0 0; end: ${x} 0 0; color: #f87171; opacity: 0.9`);
+    // Langkah 2: dari hujung-X, gerak sepanjang paksi-Y
+    document.getElementById("guide-y").setAttribute("line", `start: ${x} 0 0; end: ${x} ${y} 0; color: #4ade80; opacity: 0.9`);
+    // Langkah 3: dari situ, naik/turun sepanjang paksi-Z ke titik akhir
+    document.getElementById("guide-z").setAttribute("line", `start: ${x} ${y} 0; end: ${x} ${y} ${z}; color: #60a5fa; opacity: 0.9`);
+
+    const point = document.getElementById("plotted-point");
+    point.setAttribute("position", `${x} ${y} ${z}`);
+    point.setAttribute("visible", "true");
+
+    document.getElementById("coord-readout").textContent = `Titik semasa: (${x}, ${y}, ${z})`;
+
+    SheetConnector.send({
+      sheet: "Mission_Log",
+      timestamp: new Date().toISOString(),
+      studentName: studentName,
+      shape: "coordinate-space",
+      actionType: `point_plotted_${x}_${y}_${z}`,
+      timeSpentSec: Math.round((Date.now() - startTime) / 1000)
+    });
+  }
+
+  function resetPoint() {
+    ["input-x", "input-y", "input-z"].forEach((id) => (document.getElementById(id).value = 0));
+    ["guide-x", "guide-y", "guide-z"].forEach((id) =>
+      document.getElementById(id).setAttribute("line", "start: 0 0 0; end: 0 0 0")
+    );
+    document.getElementById("plotted-point").setAttribute("visible", "false");
+    document.getElementById("coord-readout").textContent = "Titik semasa: (0, 0, 0)";
+  }
+
+  document.getElementById("plot-btn").addEventListener("click", plotPoint);
+  document.getElementById("reset-btn").addEventListener("click", resetPoint);
+
+  SheetConnector.send({
+    sheet: "Mission_Log",
+    timestamp: new Date().toISOString(),
+    studentName: studentName,
+    shape: "coordinate-space",
+    actionType: "scene_loaded",
+    timeSpentSec: 0
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+<title>Pyramid Mission — GeoSight AR</title>
+<link rel="stylesheet" href="../css/style.css" />
+<script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.5/aframe/build/aframe-ar.js"></script>
+</head>
+<body>
+
+<div class="ar-wrapper">
+
+  <a-scene
+    embedded
+    arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix;"
+    vr-mode-ui="enabled: false"
+    renderer="logarithmicDepthBuffer: true;"
+  >
+    <a-marker preset="hiro">
+      <a-entity id="pyramid-group" position="0 0 0" scale="0.5 0.5 0.5">
+
+        <!-- Bentuk pepejal: piramid tapak persegi (segments-radial=4) -->
+        <a-cone id="pyramid-solid" radius-bottom="0.42" radius-top="0" height="0.8"
+                segments-radial="4" rotation="0 45 0" material="color: #f59e0b; emissive: #f59e0b; emissiveIntensity: 0.4; roughness: 0.3; metalness: 0.15; opacity: 0.9"></a-cone>
+
+        <!-- Net: tapak persegi + 4 muka segitiga (ANGGARAN — segitiga dibina
+             dari cone 3-segmen sangat nipis supaya jadi kepingan rata) -->
+        <a-plane id="pyr-base" width="0.6" height="0.6" material="color: #a855f7; emissive: #a855f7; emissiveIntensity: 0.4; roughness: 0.3; metalness: 0.15; opacity: 0.9" side="double"
+                 rotation="-90 0 0" visible="false"></a-plane>
+
+        <a-cone id="pyr-tri-front" radius-bottom="0.45" radius-top="0" height="0.02"
+                segments-radial="3" rotation="90 0 0" material="color: #ec4899; emissive: #ec4899; emissiveIntensity: 0.4; roughness: 0.3; metalness: 0.15; opacity: 0.9" visible="false"></a-cone>
+        <a-cone id="pyr-tri-back" radius-bottom="0.45" radius-top="0" height="0.02"
+                segments-radial="3" rotation="90 0 180" material="color: #ec4899; emissive: #ec4899; emissiveIntensity: 0.4; roughness: 0.3; metalness: 0.15; opacity: 0.9" visible="false"></a-cone>
+        <a-cone id="pyr-tri-right" radius-bottom="0.45" radius-top="0" height="0.02"
+                segments-radial="3" rotation="90 0 -90" material="color: #f472b6; emissive: #f472b6; emissiveIntensity: 0.4; roughness: 0.3; metalness: 0.15; opacity: 0.9" visible="false"></a-cone>
+        <a-cone id="pyr-tri-left" radius-bottom="0.45" radius-top="0" height="0.02"
+                segments-radial="3" rotation="90 0 90" material="color: #f472b6; emissive: #f472b6; emissiveIntensity: 0.4; roughness: 0.3; metalness: 0.15; opacity: 0.9" visible="false"></a-cone>
+
+        <a-animation attribute="rotation" to="0 360 0" dur="8000" easing="linear" repeat="indefinite"></a-animation>
+      </a-entity>
+    </a-marker>
+    <a-entity camera></a-entity>
+  </a-scene>
+
+  <div class="hud-frame">
+    <span class="hud-corner tl"></span><span class="hud-corner tr"></span>
+    <span class="hud-corner bl"></span><span class="hud-corner br"></span>
+    <div class="hud-scanline"></div>
+    <div class="hud-status"><span class="dot"></span> AR MODE ACTIVE</div>
+  </div>
+
+  <div class="overlay-top">
+    <a href="../index.html" class="back-btn">←</a>
+    <span class="mission-badge">MISSION 04 / 06</span>
+  </div>
+
+  <div class="mission-title-wrap">
+    <h1 class="mission-title">🔺 PYRAMID MISSION</h1>
+  </div>
+
+  <div class="properties-panel">
+    <div class="stat"><b>5</b><span>Faces</span></div>
+    <div class="stat"><b>8</b><span>Edges</span></div>
+    <div class="stat"><b>5</b><span>Vertices</span></div>
+  </div>
+
+  <div class="marker-hint"><span class="dot"></span> Awaiting marker — arahkan kamera ke Hiro marker</div>
+
+  <div class="action-bar">
+    <button id="unfold-btn" class="btn btn-primary">📐 Unfold Net</button>
+  </div>
+
+  <div id="quiz-panel" class="quiz-panel">
+    <div class="quiz-handle"></div>
+    <span class="quiz-label">Application Challenge</span>
+    <div class="quiz-question">
+      Sebuah monumen piramid purba perlu dipulihara. Tapak persegi bersisi <b>6cm</b>,
+      tinggi sisi (slant height) <b>10cm</b>. Berapakah jumlah luas permukaan (cm²)?
+    </div>
+    <div class="quiz-formula">SA = a² + 4(½ × a × l)</div>
+    <div class="quiz-input-row">
+      <input type="number" id="quiz-answer" placeholder="Jawapan dalam cm²" />
+      <button id="check-answer-btn" class="btn btn-success">✓ Check</button>
+    </div>
+    <div id="quiz-feedback" class="feedback"></div>
+  </div>
+
+</div>
+
+<script src="../js/sheet-connector.js"></script>
+<script src="../js/ar-controller.js"></script>
+<script>
+  const pyramidMission = new ARMissionController({
+    shape: "pyramid",
+    studentName: localStorage.getItem("geosight_student_name") || "Guest",
+    groupId: "pyramid-group",
+    mode: "reveal",
+
+    solidId: "pyramid-solid",
+    netPieces: [
+      { id: "pyr-base",       unfoldedPos: "0 -1.2 0" },
+      { id: "pyr-tri-front",  unfoldedPos: "0 0 1.3" },
+      { id: "pyr-tri-back",   unfoldedPos: "0 0 -1.3" },
+      { id: "pyr-tri-right",  unfoldedPos: "1.3 0 0" },
+      { id: "pyr-tri-left",   unfoldedPos: "-1.3 0 0" }
+    ],
+
+    quiz: {
+      question: "Luas permukaan piramid tapak 6cm, slant 10cm",
+      correctAnswer: 156,
+      formulaHint: "SA = a² + 4(½×a×l) → 36 + 4(30)",
+      explanation: "SA = 6² + 4(½×6×10) = 36 + 120 = 156 cm²"
+    }
+  });
+
+  pyramidMission.init();
+</script>
+
+</body>
+</html>

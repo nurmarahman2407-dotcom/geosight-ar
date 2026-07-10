@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Real-World Task — GeoSight AR</title>
+<link rel="stylesheet" href="../css/style.css" />
+<style>
+  .hub { min-height: 100vh; padding: 40px 20px 60px; max-width: 480px; margin: 0 auto; }
+  .top-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .page-title { font-family: var(--font-display); font-weight: 700; font-size: 20px; margin: 0; }
+
+  .panel {
+    background: var(--panel-glass); backdrop-filter: blur(14px); border: 1px solid var(--border-glass);
+    border-radius: 18px; padding: 18px 20px; margin-bottom: 14px;
+  }
+  .panel h3 { font-family: var(--font-display); font-size: 15px; margin: 0 0 10px; color: var(--aurora-cyan); }
+  .panel p, .panel li { font-family: var(--font-body); font-size: 14px; line-height: 1.6; color: var(--text-light); }
+  .given-box {
+    background: rgba(255,255,255,0.03); border-radius: 10px; padding: 12px 14px;
+    font-family: var(--font-mono); font-size: 12px; color: var(--text-muted); margin: 10px 0;
+  }
+
+  .q-input {
+    width: 100%; padding: 11px; border-radius: 10px; border: 1px solid var(--border-glass);
+    background: rgba(255,255,255,0.04); color: var(--text-light); font-family: var(--font-body);
+    font-size: 14px; margin-top: 8px;
+  }
+  .q-input:focus { outline: none; border-color: var(--aurora-cyan); }
+
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 50;
+    align-items: center; justify-content: center;
+  }
+  .modal-overlay.active { display: flex; }
+  .modal-box {
+    background: var(--panel-glass-strong); backdrop-filter: blur(20px); border: 1px solid var(--border-glass);
+    border-radius: 18px; padding: 22px; width: 85%; max-width: 340px; text-align: center;
+  }
+  .modal-box h3 { font-family: var(--font-display); font-size: 16px; margin: 0 0 6px; }
+  .modal-box p { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); margin-bottom: 14px; }
+  .modal-actions { display: flex; gap: 8px; margin-top: 10px; }
+  .modal-actions .btn { flex: 1; justify-content: center; }
+
+  .solution-box { display: none; margin-top: 14px; }
+</style>
+</head>
+<body>
+
+<div class="hub">
+  <div class="top-row">
+    <a href="../index.html" class="back-btn" style="position:static;">←</a>
+    <h1 class="page-title">🌍 Real-World Mission</h1>
+    <span style="width:38px"></span>
+  </div>
+
+  <div class="panel">
+    <h3>📦 GeoSight Delivery — Pallet Packing Challenge</h3>
+    <p><b>Objektif Pembelajaran:</b></p>
+    <ul>
+      <li>Kaitkan isipadu dengan susunan ruang</li>
+      <li>Tentukan saiz kotak paling efisien untuk penghantaran</li>
+      <li>Justifikasi pilihan menggunakan penaakulan matematik</li>
+    </ul>
+
+    <div class="given-box">
+      Unit Logistik GeoSight perlu menghantar produk menggunakan palet standard.<br/><br/>
+      • Saiz palet: <b>100cm × 100cm</b><br/>
+      • Saiz kotak semasa: <b>25cm × 25cm × 20cm</b><br/>
+      • Kotak boleh <b>diputar</b> (contoh: 25×20 di atas palet)<br/><br/>
+      Tugasan anda: cari <b>susunan terbaik</b> supaya palet boleh membawa sebanyak mungkin kotak.
+    </div>
+  </div>
+
+  <div class="panel">
+    <h3>Part A — Susunan Asas</h3>
+    <p>1. Palet bersaiz 100cm × 100cm. Tapak kotak ialah 25cm × 25cm.<br/>
+       <b>a.</b> Berapa banyak kotak boleh muat di atas palet jika disusun tanpa putaran?</p>
+    <input type="text" id="answer-a" class="q-input" placeholder="Jawapan (bilangan kotak)" />
+  </div>
+
+  <div class="panel">
+    <h3>Part B — Strategi Putaran</h3>
+    <p>2. Jika kotak diletak dengan tapak 25cm × 20cm, berapakah bilangan maksimum kotak yang boleh muat?</p>
+    <input type="text" id="answer-b" class="q-input" placeholder="Jawapan (bilangan kotak)" />
+  </div>
+
+  <button id="check-btn" class="btn btn-primary" style="width:100%; justify-content:center;">🔒 Check Answers</button>
+
+  <div id="solution-box" class="solution-box panel">
+    <h3>✅ Model Answers</h3>
+    <p><b>Part A:</b> 100÷25 = 4 kotak sepanjang, 4×4 = <b>16 kotak</b></p>
+    <p><b>Part B:</b> Cuba 25×20 — 100÷25=4 (arah x), 100÷20=5 (arah y) → 4×5 = <b>20 kotak</b> (lebih baik!)</p>
+    <p style="color:var(--text-muted); font-size:12px;">Susunan berputar (20 kotak) lebih efisien berbanding susunan asal (16 kotak) — jimat lebih banyak ruang palet.</p>
+  </div>
+
+</div>
+
+<!-- Modal password -->
+<div id="modal-overlay" class="modal-overlay">
+  <div class="modal-box">
+    <h3>🔒 Check Answers Access</h3>
+    <p>Hint: Password ialah jawapan anda untuk Part A (tanpa unit)</p>
+    <input type="text" id="password-input" class="q-input" placeholder="Masukkan password" />
+    <div class="modal-actions">
+      <button id="modal-cancel" class="btn btn-secondary">Batal</button>
+      <button id="modal-check" class="btn btn-success">✓ Check</button>
+    </div>
+  </div>
+</div>
+
+<script src="../js/sheet-connector.js"></script>
+<script>
+  const studentName = localStorage.getItem("geosight_student_name") || "Guest";
+
+  document.getElementById("check-btn").addEventListener("click", () => {
+    document.getElementById("modal-overlay").classList.add("active");
+  });
+  document.getElementById("modal-cancel").addEventListener("click", () => {
+    document.getElementById("modal-overlay").classList.remove("active");
+  });
+
+  document.getElementById("modal-check").addEventListener("click", () => {
+    const pw = document.getElementById("password-input").value.trim();
+    if (pw === "16") {
+      document.getElementById("modal-overlay").classList.remove("active");
+      document.getElementById("solution-box").style.display = "block";
+
+      SheetConnector.send({
+        sheet: "Mission_Log",
+        timestamp: new Date().toISOString(),
+        studentName: studentName,
+        shape: "real-world-task",
+        actionType: "solution_unlocked",
+        timeSpentSec: 0
+      });
+    } else {
+      alert("Password salah. Cuba selesaikan Part A dahulu!");
+    }
+  });
+</script>
+
+</body>
+</html>

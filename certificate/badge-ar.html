@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+<title>Badge Unlocked — GeoSight AR</title>
+<link rel="stylesheet" href="../css/style.css" />
+<script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.5/aframe/build/aframe-ar.js"></script>
+<style>
+  .cert-card {
+    position: absolute; bottom: 0; left: 0; width: 100%; z-index: 30;
+    background: var(--panel-glass-strong); backdrop-filter: blur(20px);
+    border-radius: 24px 24px 0 0; padding: 22px 22px 26px;
+    box-shadow: 0 -10px 50px rgba(0,0,0,0.6); border-top: 1px solid var(--border-glass);
+    text-align: center;
+  }
+  .cert-tier-strip { height: 4px; border-radius: 24px 24px 0 0; margin: -22px -22px 16px; }
+  .cert-heading { font-family: var(--font-display); font-weight: 700; font-size: 22px; margin: 0 0 4px; }
+  .cert-sub { font-family: var(--font-body); font-size: 13px; color: var(--text-muted); margin-bottom: 16px; }
+  .cert-score-row { display: flex; justify-content: center; gap: 26px; margin-bottom: 16px; }
+  .cert-score-row .item b { display: block; font-family: var(--font-mono); font-size: 22px; }
+  .cert-score-row .item span { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.1em; color: var(--text-dim); text-transform: uppercase; }
+  .cert-tier-badge {
+    display: inline-block; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em;
+    padding: 6px 16px; border-radius: 20px; margin-bottom: 16px; text-transform: uppercase; font-weight: 700;
+  }
+  .cert-id { font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); margin-bottom: 18px; }
+  .cert-actions { display: flex; gap: 10px; }
+  .cert-actions .btn { flex: 1; justify-content: center; }
+</style>
+</head>
+<body>
+
+<div class="ar-wrapper">
+
+  <a-scene
+    embedded
+    arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix;"
+    vr-mode-ui="enabled: false"
+    renderer="logarithmicDepthBuffer: true;"
+  >
+    <a-marker preset="hiro">
+      <a-entity id="badge-root" position="0 0.3 0" scale="0.01 0.01 0.01">
+        <!-- reveal: scale dari 0.01 -> 0.55 dengan bounce -->
+        <a-animation attribute="scale" to="0.55 0.55 0.55" dur="900" easing="easeOutElastic" begin="300"></a-animation>
+
+        <!-- Badge medallion: cincin luar + pusat + bintang atas -->
+        <a-torus id="badge-ring-outer" radius="1" radius-tubular="0.09" color="#facc15" segments-tubular="24"></a-torus>
+        <a-cylinder id="badge-face" radius="0.82" height="0.06" color="#fde047" rotation="90 0 0"></a-cylinder>
+        <a-cone id="badge-star" radius-bottom="0.35" radius-top="0" height="0.3" segments-radial="5"
+                color="#fff7c2" position="0 0.08 0"></a-cone>
+
+        <!-- Auto-rotate badge -->
+        <a-animation attribute="rotation" to="0 360 0" dur="6000" easing="linear" repeat="indefinite" begin="1200"></a-animation>
+
+        <!-- Glow rings: expand + fade, berulang -->
+        <a-ring id="glow-ring-1" radius-inner="1" radius-outer="1.05" color="#facc15" opacity="0.6"
+                rotation="90 0 0">
+          <a-animation attribute="scale" from="1 1 1" to="2.4 2.4 2.4" dur="2000" repeat="indefinite" easing="easeOutQuad"></a-animation>
+          <a-animation attribute="material.opacity" from="0.6" to="0" dur="2000" repeat="indefinite" easing="easeOutQuad"></a-animation>
+        </a-ring>
+        <a-ring id="glow-ring-2" radius-inner="1" radius-outer="1.05" color="#facc15" opacity="0.6"
+                rotation="90 0 0">
+          <a-animation attribute="scale" from="1 1 1" to="2.4 2.4 2.4" dur="2000" repeat="indefinite" easing="easeOutQuad" delay="1000"></a-animation>
+          <a-animation attribute="material.opacity" from="0.6" to="0" dur="2000" repeat="indefinite" easing="easeOutQuad" delay="1000"></a-animation>
+        </a-ring>
+      </a-entity>
+
+      <!-- Confetti: kepingan kecil terapung naik + berpusing, staggered -->
+      <a-entity id="confetti-group" position="0 0 0">
+        <a-box class="confetti" width="0.08" height="0.08" depth="0.02" color="#22d3ee" position="-1.2 0 0.3"></a-box>
+        <a-box class="confetti" width="0.08" height="0.08" depth="0.02" color="#a855f7" position="0.9 0.1 -0.3"></a-box>
+        <a-box class="confetti" width="0.08" height="0.08" depth="0.02" color="#ec4899" position="-0.6 -0.2 0.6"></a-box>
+        <a-box class="confetti" width="0.08" height="0.08" depth="0.02" color="#34d399" position="1.1 -0.1 0.2"></a-box>
+        <a-box class="confetti" width="0.08" height="0.08" depth="0.02" color="#facc15" position="-1.0 0.3 -0.5"></a-box>
+        <a-box class="confetti" width="0.08" height="0.08" depth="0.02" color="#22d3ee" position="0.4 -0.3 0.8"></a-box>
+      </a-entity>
+    </a-marker>
+    <a-entity camera></a-entity>
+  </a-scene>
+
+  <div class="hud-frame">
+    <span class="hud-corner tl"></span><span class="hud-corner tr"></span>
+    <span class="hud-corner bl"></span><span class="hud-corner br"></span>
+    <div class="hud-scanline"></div>
+    <div class="hud-status"><span class="dot"></span> BADGE UNLOCKED</div>
+  </div>
+
+  <div class="overlay-top">
+    <a href="../dashboard/student.html" class="back-btn">←</a>
+    <span class="mission-badge">CERTIFICATE</span>
+  </div>
+
+  <div class="mission-title-wrap">
+    <h1 class="mission-title">🏆 MISSION COMPLETE</h1>
+  </div>
+
+  <div class="marker-hint"><span class="dot"></span> Arahkan kamera ke Hiro marker untuk lihat badge</div>
+
+  <!-- ═══════════ Kad Sijil ═══════════ -->
+  <div class="cert-card">
+    <div id="cert-tier-strip" class="cert-tier-strip"></div>
+    <h2 id="cert-heading" class="cert-heading">Tahniah!</h2>
+    <p id="cert-sub" class="cert-sub">Anda telah menamatkan GeoSight AR Missions</p>
+
+    <div class="cert-score-row">
+      <div class="item"><b id="cert-score">-</b><span>Skor</span></div>
+      <div class="item"><b id="cert-percent">-</b><span>Peratus</span></div>
+    </div>
+
+    <div id="cert-tier-badge" class="cert-tier-badge">-</div>
+    <div id="cert-id" class="cert-id">ID: -</div>
+
+    <div class="cert-actions">
+      <button id="download-btn" class="btn btn-secondary">📄 Download Certificate</button>
+      <a href="../dashboard/student.html" class="btn btn-primary">Dashboard →</a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const name = params.get("name") || "Agent";
+  const score = parseInt(params.get("score") || "0");
+  const total = parseInt(params.get("total") || "5");
+  const tier = params.get("tier") || "Silver";
+  const certId = params.get("certId") || "GS-00000000-XXX";
+  const percent = Math.round((score / total) * 100);
+
+  const tierConfig = {
+    Gold:   { color: "#facc15", bg: "rgba(250,204,21,0.15)", border: "#facc15", label: "🥇 GeoSight Master Badge", heading: `Sempurna, ${name}!`, ringColor: "#facc15" },
+    Green:  { color: "#34d399", bg: "rgba(52,211,153,0.15)", border: "#34d399", label: "🥈 Geometry Explorer Badge", heading: `Hebat, ${name}!`, ringColor: "#34d399" },
+    Silver: { color: "#94a3b8", bg: "rgba(148,163,184,0.15)", border: "#94a3b8", label: "🎖️ Participation Certificate", heading: `Tahniah, ${name}!`, ringColor: "#94a3b8" }
+  };
+  const cfg = tierConfig[tier] || tierConfig.Silver;
+
+  document.getElementById("cert-heading").textContent = cfg.heading;
+  document.getElementById("cert-score").textContent = `${score}/${total}`;
+  document.getElementById("cert-percent").textContent = `${percent}%`;
+  document.getElementById("cert-id").textContent = `Verification ID: ${certId}`;
+
+  const tierBadge = document.getElementById("cert-tier-badge");
+  tierBadge.textContent = cfg.label;
+  tierBadge.style.background = cfg.bg;
+  tierBadge.style.color = cfg.color;
+  tierBadge.style.border = `1px solid ${cfg.border}`;
+
+  document.getElementById("cert-tier-strip").style.background = cfg.color;
+
+  // Warnakan badge medallion dalam AR ikut tier
+  ["badge-ring-outer", "badge-face", "glow-ring-1", "glow-ring-2"].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.setAttribute("color", cfg.ringColor);
+  });
+
+  // Butang download — untuk demo ni, print page je (boleh upgrade ke jsPDF kemudian)
+  document.getElementById("download-btn").addEventListener("click", () => {
+    window.print();
+  });
+</script>
+
+</body>
+</html>

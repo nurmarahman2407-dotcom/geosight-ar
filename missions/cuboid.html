@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+<title>Cuboid Mission — GeoSight AR</title>
+<link rel="stylesheet" href="../css/style.css" />
+<script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.5/aframe/build/aframe-ar.js"></script>
+</head>
+<body>
+
+<div class="ar-wrapper">
+
+  <a-scene
+    embedded
+    arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix;"
+    vr-mode-ui="enabled: false"
+    renderer="logarithmicDepthBuffer: true;"
+  >
+    <a-marker preset="hiro">
+      <!-- Dimensi (skala dari 6cm x 4cm x 3cm, faktor 0.15) -->
+      <a-entity id="cuboid-group" position="0 0 0" scale="0.5 0.5 0.5">
+
+        <a-plane id="face-front"  width="0.9" height="0.45" material="color: #22d3ee; emissive: #22d3ee; emissiveIntensity: 0.4; roughness: 0.3; metalness: 0.15; opacity: 0.9" side="double"
+                 position="0 0 0.3" rotation="0 0 0"></a-plane>
+        <a-plane id="face-back"   width="0.9" height="0.45" material="color: #ec4899; emissive: #ec4899; emissiveIntensity: 0.4; roughness: 0.3; metalness: 0.15; opacity: 0.9" side="double"
+                 position="0 0 -0.3" rotation="0 180 0"></a-plane>
+        <a-plane id="face-right"  width="0.6" height="0.45" material="color: #a855f7; emissive: #a855f7; emissiveIntensity: 0.4; roughness: 0.3; metalness: 0.15; opacity: 0.9" side="double"
+                 position="0.45 0 0" rotation="0 90 0"></a-plane>
+        <a-plane id="face-left"   width="0.6" height="0.45" material="color: #818cf8; emissive: #818cf8; emissiveIntensity: 0.4; roughness: 0.3; metalness: 0.15; opacity: 0.9" side="double"
+                 position="-0.45 0 0" rotation="0 -90 0"></a-plane>
+        <a-plane id="face-top"    width="0.9" height="0.6" material="color: #67e8f9; emissive: #67e8f9; emissiveIntensity: 0.4; roughness: 0.3; metalness: 0.15; opacity: 0.9" side="double"
+                 position="0 0.225 0" rotation="-90 0 0"></a-plane>
+        <a-plane id="face-bottom" width="0.9" height="0.6" material="color: #d946ef; emissive: #d946ef; emissiveIntensity: 0.4; roughness: 0.3; metalness: 0.15; opacity: 0.9" side="double"
+                 position="0 -0.225 0" rotation="90 0 0"></a-plane>
+
+        <a-animation attribute="rotation" to="0 360 0" dur="8000" easing="linear" repeat="indefinite"></a-animation>
+      </a-entity>
+    </a-marker>
+    <a-entity camera></a-entity>
+  </a-scene>
+
+  <div class="hud-frame">
+    <span class="hud-corner tl"></span><span class="hud-corner tr"></span>
+    <span class="hud-corner bl"></span><span class="hud-corner br"></span>
+    <div class="hud-scanline"></div>
+    <div class="hud-status"><span class="dot"></span> AR MODE ACTIVE</div>
+  </div>
+
+  <div class="overlay-top">
+    <a href="../index.html" class="back-btn">←</a>
+    <span class="mission-badge">MISSION 02 / 06</span>
+  </div>
+
+  <div class="mission-title-wrap">
+    <h1 class="mission-title">📦 CUBOID MISSION</h1>
+  </div>
+
+  <div class="properties-panel">
+    <div class="stat"><b>6</b><span>Faces</span></div>
+    <div class="stat"><b>12</b><span>Edges</span></div>
+    <div class="stat"><b>8</b><span>Vertices</span></div>
+  </div>
+
+  <div class="marker-hint"><span class="dot"></span> Awaiting marker — arahkan kamera ke Hiro marker</div>
+
+  <div class="action-bar">
+    <button id="unfold-btn" class="btn btn-primary">📐 Unfold Net</button>
+  </div>
+
+  <div id="quiz-panel" class="quiz-panel">
+    <div class="quiz-handle"></div>
+    <span class="quiz-label">Application Challenge</span>
+    <div class="quiz-question">
+      Sebuah syarikat penghantaran perlu membalut kotak kuboid dengan bahan pelindung.
+      Dimensi kotak ialah <b>6cm × 4cm × 3cm</b>. Berapa jumlah luas permukaan (cm²)?
+    </div>
+    <div class="quiz-formula">SA = 2(lw + lh + wh)</div>
+    <div class="quiz-input-row">
+      <input type="number" id="quiz-answer" placeholder="Jawapan dalam cm²" />
+      <button id="check-answer-btn" class="btn btn-success">✓ Check</button>
+    </div>
+    <div id="quiz-feedback" class="feedback"></div>
+  </div>
+
+</div>
+
+<script src="../js/sheet-connector.js"></script>
+<script src="../js/ar-controller.js"></script>
+<script>
+  const cuboidMission = new ARMissionController({
+    shape: "cuboid",
+    studentName: localStorage.getItem("geosight_student_name") || "Guest",
+    groupId: "cuboid-group",
+    mode: "morph",
+
+    faces: [
+      { id: "face-front",  foldedPos: "0 0 0.3",    foldedRot: "0 0 0",    unfoldedPos: "0 0 0",     unfoldedRot: "0 0 0" },
+      { id: "face-top",    foldedPos: "0 0.225 0",   foldedRot: "-90 0 0",  unfoldedPos: "0 0.525 0", unfoldedRot: "0 0 0" },
+      { id: "face-bottom", foldedPos: "0 -0.225 0",  foldedRot: "90 0 0",   unfoldedPos: "0 -0.525 0",unfoldedRot: "0 0 0" },
+      { id: "face-left",   foldedPos: "-0.45 0 0",   foldedRot: "0 -90 0",  unfoldedPos: "-0.75 0 0", unfoldedRot: "0 0 0" },
+      { id: "face-right",  foldedPos: "0.45 0 0",    foldedRot: "0 90 0",   unfoldedPos: "0.75 0 0",  unfoldedRot: "0 0 0" },
+      { id: "face-back",   foldedPos: "0 0 -0.3",    foldedRot: "0 180 0",  unfoldedPos: "1.35 0 0",  unfoldedRot: "0 0 0" }
+    ],
+
+    quiz: {
+      question: "Luas permukaan kuboid 6cm x 4cm x 3cm",
+      correctAnswer: 108,
+      formulaHint: "SA = 2(lw+lh+wh) → 2(24+18+12)",
+      explanation: "SA = 2(6×4 + 6×3 + 4×3) = 2(24+18+12) = 2(54) = 108 cm²"
+    }
+  });
+
+  cuboidMission.init();
+</script>
+
+</body>
+</html>

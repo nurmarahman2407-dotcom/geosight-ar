@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+<title>Cone Mission — GeoSight AR</title>
+<link rel="stylesheet" href="../css/style.css" />
+<script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.5/aframe/build/aframe-ar.js"></script>
+</head>
+<body>
+
+<div class="ar-wrapper">
+
+  <a-scene
+    embedded
+    arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix;"
+    vr-mode-ui="enabled: false"
+    renderer="logarithmicDepthBuffer: true;"
+  >
+    <a-marker preset="hiro">
+      <a-entity id="cone-group" position="0 0 0" scale="0.5 0.5 0.5">
+
+        <!-- Bentuk pepejal (r=5cm, h=12cm, slant=13cm — skala 0.08) -->
+        <a-cone id="cone-solid" radius-bottom="0.4" radius-top="0" height="0.96" material="color: #38bdf8; emissive: #38bdf8; emissiveIntensity: 0.4; roughness: 0.3; metalness: 0.15; opacity: 0.9"></a-cone>
+
+        <!-- Net: tapak bulat + sektor (permukaan melengkung "dibuka rata") -->
+        <a-circle id="cone-base"   radius="0.4" material="color: #a855f7; emissive: #a855f7; emissiveIntensity: 0.4; roughness: 0.3; metalness: 0.15; opacity: 0.9" side="double"
+                  rotation="-90 0 0" visible="false"></a-circle>
+        <!--
+          Nota teknikal: sektor ni ANGGARAN permukaan melengkung kon yang
+          "dibuka rata" — sudut sektor = (r/slant) × 360°. Guna a-circle
+          dengan theta-length (A-Frame sokong ni terus, elak perlu custom mesh)
+        -->
+        <a-circle id="cone-sector" radius="1.04" theta-length="138" material="color: #ec4899; emissive: #ec4899; emissiveIntensity: 0.4; roughness: 0.3; metalness: 0.15; opacity: 0.9" side="double"
+                  visible="false"></a-circle>
+
+        <a-animation attribute="rotation" to="0 360 0" dur="8000" easing="linear" repeat="indefinite"></a-animation>
+      </a-entity>
+    </a-marker>
+    <a-entity camera></a-entity>
+  </a-scene>
+
+  <div class="hud-frame">
+    <span class="hud-corner tl"></span><span class="hud-corner tr"></span>
+    <span class="hud-corner bl"></span><span class="hud-corner br"></span>
+    <div class="hud-scanline"></div>
+    <div class="hud-status"><span class="dot"></span> AR MODE ACTIVE</div>
+  </div>
+
+  <div class="overlay-top">
+    <a href="../index.html" class="back-btn">←</a>
+    <span class="mission-badge">MISSION 05 / 06</span>
+  </div>
+
+  <div class="mission-title-wrap">
+    <h1 class="mission-title">🍦 CONE MISSION</h1>
+  </div>
+
+  <div class="properties-panel">
+    <div class="stat"><b>2</b><span>Faces</span></div>
+    <div class="stat"><b>1</b><span>Edges</span></div>
+    <div class="stat"><b>1</b><span>Vertices</span></div>
+  </div>
+
+  <div class="marker-hint"><span class="dot"></span> Awaiting marker — arahkan kamera ke Hiro marker</div>
+
+  <div class="action-bar">
+    <button id="unfold-btn" class="btn btn-primary">📐 Unfold Net</button>
+  </div>
+
+  <div id="quiz-panel" class="quiz-panel">
+    <div class="quiz-handle"></div>
+    <span class="quiz-label">Application Challenge</span>
+    <div class="quiz-question">
+      Kon aiskrim dibuat dari kertas berlapis. Jejari kon <b>5cm</b>, tinggi sisi (slant) <b>13cm</b>.
+      Berapakah luas kertas diperlukan untuk permukaan melengkung sahaja (cm²)? Guna π = 3.14
+    </div>
+    <div class="quiz-formula">Luas Melengkung = πrl</div>
+    <div class="quiz-input-row">
+      <input type="number" id="quiz-answer" placeholder="Jawapan dalam cm²" />
+      <button id="check-answer-btn" class="btn btn-success">✓ Check</button>
+    </div>
+    <div id="quiz-feedback" class="feedback"></div>
+  </div>
+
+</div>
+
+<script src="../js/sheet-connector.js"></script>
+<script src="../js/ar-controller.js"></script>
+<script>
+  const coneMission = new ARMissionController({
+    shape: "cone",
+    studentName: localStorage.getItem("geosight_student_name") || "Guest",
+    groupId: "cone-group",
+    mode: "reveal",
+
+    solidId: "cone-solid",
+    netPieces: [
+      { id: "cone-base",   unfoldedPos: "0 -1.2 0" },
+      { id: "cone-sector", unfoldedPos: "1.4 0 0" }
+    ],
+
+    quiz: {
+      question: "Luas melengkung kon jejari 5cm, slant 13cm",
+      correctAnswer: 204.1,
+      formulaHint: "Luas Melengkung = πrl → 3.14 × 5 × 13",
+      explanation: "πrl = 3.14 × 5 × 13 = 204.1 cm²"
+    }
+  });
+
+  coneMission.init();
+</script>
+
+</body>
+</html>

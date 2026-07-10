@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+<title>Cylinder Mission — GeoSight AR</title>
+<link rel="stylesheet" href="../css/style.css" />
+<script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.5/aframe/build/aframe-ar.js"></script>
+</head>
+<body>
+
+<div class="ar-wrapper">
+
+  <a-scene
+    embedded
+    arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix;"
+    vr-mode-ui="enabled: false"
+    renderer="logarithmicDepthBuffer: true;"
+  >
+    <a-marker preset="hiro">
+      <a-entity id="cylinder-group" position="0 0 0" scale="0.5 0.5 0.5">
+
+        <!-- Bentuk pepejal (nampak semasa "folded") -->
+        <a-cylinder id="cyl-solid" radius="0.4" height="0.8" material="color: #22d3ee; emissive: #22d3ee; emissiveIntensity: 0.4; roughness: 0.3; metalness: 0.15; opacity: 0.9"></a-cylinder>
+
+        <!-- Komponen net (tersembunyi sampai "Unfold" ditekan) -->
+        <a-circle id="cyl-top"    radius="0.4" material="color: #a855f7; emissive: #a855f7; emissiveIntensity: 0.4; roughness: 0.3; metalness: 0.15; opacity: 0.9" side="double"
+                  rotation="-90 0 0" visible="false"></a-circle>
+        <a-circle id="cyl-bottom" radius="0.4" material="color: #a855f7; emissive: #a855f7; emissiveIntensity: 0.4; roughness: 0.3; metalness: 0.15; opacity: 0.9" side="double"
+                  rotation="-90 0 0" visible="false"></a-circle>
+        <a-plane  id="cyl-side"   width="2.51" height="0.8" material="color: #ec4899; emissive: #ec4899; emissiveIntensity: 0.4; roughness: 0.3; metalness: 0.15; opacity: 0.9" side="double"
+                  visible="false"></a-plane>
+
+        <a-animation attribute="rotation" to="0 360 0" dur="8000" easing="linear" repeat="indefinite"></a-animation>
+      </a-entity>
+    </a-marker>
+    <a-entity camera></a-entity>
+  </a-scene>
+
+  <div class="hud-frame">
+    <span class="hud-corner tl"></span><span class="hud-corner tr"></span>
+    <span class="hud-corner bl"></span><span class="hud-corner br"></span>
+    <div class="hud-scanline"></div>
+    <div class="hud-status"><span class="dot"></span> AR MODE ACTIVE</div>
+  </div>
+
+  <div class="overlay-top">
+    <a href="../index.html" class="back-btn">←</a>
+    <span class="mission-badge">MISSION 03 / 06</span>
+  </div>
+
+  <div class="mission-title-wrap">
+    <h1 class="mission-title">🥫 CYLINDER MISSION</h1>
+  </div>
+
+  <div class="properties-panel">
+    <div class="stat"><b>3</b><span>Faces</span></div>
+    <div class="stat"><b>2</b><span>Edges</span></div>
+    <div class="stat"><b>0</b><span>Vertices</span></div>
+  </div>
+
+  <div class="marker-hint"><span class="dot"></span> Awaiting marker — arahkan kamera ke Hiro marker</div>
+
+  <div class="action-bar">
+    <button id="unfold-btn" class="btn btn-primary">📐 Unfold Net</button>
+  </div>
+
+  <div id="quiz-panel" class="quiz-panel">
+    <div class="quiz-handle"></div>
+    <span class="quiz-label">Application Challenge</span>
+    <div class="quiz-question">
+      Tangki air berbentuk silinder perlu diisi penuh. Jejari tangki <b>4cm</b>, tinggi <b>10cm</b>.
+      Berapakah isipadu air (cm³)? Guna π = 3.14
+    </div>
+    <div class="quiz-formula">V = πr²h</div>
+    <div class="quiz-input-row">
+      <input type="number" id="quiz-answer" placeholder="Jawapan dalam cm³" />
+      <button id="check-answer-btn" class="btn btn-success">✓ Check</button>
+    </div>
+    <div id="quiz-feedback" class="feedback"></div>
+  </div>
+
+</div>
+
+<script src="../js/sheet-connector.js"></script>
+<script src="../js/ar-controller.js"></script>
+<script>
+  const cylinderMission = new ARMissionController({
+    shape: "cylinder",
+    studentName: localStorage.getItem("geosight_student_name") || "Guest",
+    groupId: "cylinder-group",
+    mode: "reveal",
+
+    solidId: "cyl-solid",
+    netPieces: [
+      { id: "cyl-top",    unfoldedPos: "0 0.9 0" },
+      { id: "cyl-bottom", unfoldedPos: "0 -0.9 0" },
+      { id: "cyl-side",   unfoldedPos: "1.6 0 0" }
+    ],
+
+    quiz: {
+      question: "Isipadu silinder jejari 4cm, tinggi 10cm",
+      correctAnswer: 502.4,
+      formulaHint: "V = πr²h → 3.14 × 4² × 10",
+      explanation: "V = πr²h = 3.14 × 16 × 10 = 502.4 cm³"
+    }
+  });
+
+  cylinderMission.init();
+</script>
+
+</body>
+</html>
