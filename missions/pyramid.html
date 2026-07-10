@@ -23,23 +23,23 @@
 
         <!-- Bentuk pepejal: piramid tapak persegi (segments-radial=4) -->
         <a-cone id="pyramid-solid" radius-bottom="0.42" radius-top="0" height="0.8"
-                segments-radial="4" rotation="0 45 0" material="color: #f59e0b; emissive: #f59e0b; emissiveIntensity: 0.4; roughness: 0.3; metalness: 0.15; opacity: 0.9"></a-cone>
+                segments-radial="4" rotation="0 45 0" material="color: #f59e0b; emissive: #f59e0b; emissiveIntensity: 0.22; roughness: 0.3; metalness: 0.15; opacity: 1"></a-cone>
 
         <!-- Net: tapak persegi + 4 muka segitiga (ANGGARAN — segitiga dibina
              dari cone 3-segmen sangat nipis supaya jadi kepingan rata) -->
-        <a-plane id="pyr-base" width="0.6" height="0.6" material="color: #a855f7; emissive: #a855f7; emissiveIntensity: 0.4; roughness: 0.3; metalness: 0.15; opacity: 0.9" side="double"
+        <a-plane id="pyr-base" width="0.6" height="0.6" material="color: #a855f7; emissive: #a855f7; emissiveIntensity: 0.22; roughness: 0.3; metalness: 0.15; opacity: 1" side="double"
                  rotation="-90 0 0" visible="false"></a-plane>
 
         <a-cone id="pyr-tri-front" radius-bottom="0.45" radius-top="0" height="0.02"
-                segments-radial="3" rotation="90 0 0" material="color: #ec4899; emissive: #ec4899; emissiveIntensity: 0.4; roughness: 0.3; metalness: 0.15; opacity: 0.9" visible="false"></a-cone>
+                segments-radial="3" rotation="90 0 0" material="color: #ec4899; emissive: #ec4899; emissiveIntensity: 0.22; roughness: 0.3; metalness: 0.15; opacity: 1" visible="false"></a-cone>
         <a-cone id="pyr-tri-back" radius-bottom="0.45" radius-top="0" height="0.02"
-                segments-radial="3" rotation="90 0 180" material="color: #ec4899; emissive: #ec4899; emissiveIntensity: 0.4; roughness: 0.3; metalness: 0.15; opacity: 0.9" visible="false"></a-cone>
+                segments-radial="3" rotation="90 0 180" material="color: #ec4899; emissive: #ec4899; emissiveIntensity: 0.22; roughness: 0.3; metalness: 0.15; opacity: 1" visible="false"></a-cone>
         <a-cone id="pyr-tri-right" radius-bottom="0.45" radius-top="0" height="0.02"
-                segments-radial="3" rotation="90 0 -90" material="color: #f472b6; emissive: #f472b6; emissiveIntensity: 0.4; roughness: 0.3; metalness: 0.15; opacity: 0.9" visible="false"></a-cone>
+                segments-radial="3" rotation="90 0 -90" material="color: #f472b6; emissive: #f472b6; emissiveIntensity: 0.22; roughness: 0.3; metalness: 0.15; opacity: 1" visible="false"></a-cone>
         <a-cone id="pyr-tri-left" radius-bottom="0.45" radius-top="0" height="0.02"
-                segments-radial="3" rotation="90 0 90" material="color: #f472b6; emissive: #f472b6; emissiveIntensity: 0.4; roughness: 0.3; metalness: 0.15; opacity: 0.9" visible="false"></a-cone>
+                segments-radial="3" rotation="90 0 90" material="color: #f472b6; emissive: #f472b6; emissiveIntensity: 0.22; roughness: 0.3; metalness: 0.15; opacity: 1" visible="false"></a-cone>
 
-        <a-animation attribute="rotation" to="0 360 0" dur="8000" easing="linear" repeat="indefinite"></a-animation>
+        <a-animation id="auto-spin" attribute="rotation" to="0 360 0" dur="8000" easing="linear" repeat="indefinite"></a-animation>
       </a-entity>
     </a-marker>
     <a-entity camera></a-entity>
@@ -70,8 +70,12 @@
   <div class="marker-hint"><span class="dot"></span> Awaiting marker — arahkan kamera ke Hiro marker</div>
 
   <div class="action-bar">
+    <button id="rotate-left-btn" class="btn btn-rotate">⟲</button>
     <button id="unfold-btn" class="btn btn-primary">📐 Unfold Net</button>
+    <button id="rotate-right-btn" class="btn btn-rotate">⟳</button>
   </div>
+
+  <button id="show-quiz-btn" class="show-quiz-btn">📝 Jawab Quiz Bila Anda Sedia</button>
 
   <div id="quiz-panel" class="quiz-panel">
     <div class="quiz-handle"></div>
@@ -97,6 +101,7 @@
     shape: "pyramid",
     studentName: localStorage.getItem("geosight_student_name") || "Guest",
     groupId: "pyramid-group",
+    autoSpinId: "auto-spin",
     mode: "reveal",
 
     solidId: "pyramid-solid",
