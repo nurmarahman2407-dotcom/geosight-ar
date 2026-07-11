@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ms">
+<html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -49,12 +49,12 @@
 
 <div class="hub">
   <div class="top-row">
-    <a href="../index.html" class="back-btn" style="position:static;">←</a>
+    <a href="../index.html" class="menu-btn">🏠 Menu</a>
     <h1 class="page-title">📊 Student Dashboard</h1>
     <span style="width:38px"></span>
   </div>
 
-  <div id="loading" class="loading-msg">⏳ Memuatkan data dari Sheets...</div>
+  <div id="loading" class="loading-msg">⏳ Loading data from Sheets...</div>
   <div id="error" class="error-msg" style="display:none;"></div>
 
   <div id="dashboard-content" style="display:none;">
@@ -105,7 +105,7 @@
       document.getElementById("loading").style.display = "none";
       const errEl = document.getElementById("error");
       errEl.style.display = "block";
-      errEl.textContent = "⚠️ " + err.message + " — pastikan URL Apps Script dah di-set dalam sheet-connector.js";
+      errEl.textContent = "⚠️ " + err.message + " — make sure the Apps Script URL is set in sheet-connector.js";
     });
 
   function renderDashboard(data) {
