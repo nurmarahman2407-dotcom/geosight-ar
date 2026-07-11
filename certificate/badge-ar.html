@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ms">
+<html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
@@ -88,7 +88,7 @@
   </div>
 
   <div class="overlay-top">
-    <a href="../dashboard/student.html" class="back-btn">←</a>
+    <a href="../index.html" class="menu-btn">🏠 Menu</a>
     <span class="mission-badge">CERTIFICATE</span>
   </div>
 
@@ -96,17 +96,17 @@
     <h1 class="mission-title">🏆 MISSION COMPLETE</h1>
   </div>
 
-  <div class="marker-hint"><span class="dot"></span> Arahkan kamera ke Hiro marker untuk lihat badge</div>
+  <div class="marker-hint"><span class="dot"></span> Point camera at Hiro marker to view badge</div>
 
   <!-- ═══════════ Kad Sijil ═══════════ -->
   <div class="cert-card">
     <div id="cert-tier-strip" class="cert-tier-strip"></div>
-    <h2 id="cert-heading" class="cert-heading">Tahniah!</h2>
-    <p id="cert-sub" class="cert-sub">Anda telah menamatkan GeoSight AR Missions</p>
+    <h2 id="cert-heading" class="cert-heading">Congratulations!</h2>
+    <p id="cert-sub" class="cert-sub">You have completed the GeoSight AR Missions</p>
 
     <div class="cert-score-row">
-      <div class="item"><b id="cert-score">-</b><span>Skor</span></div>
-      <div class="item"><b id="cert-percent">-</b><span>Peratus</span></div>
+      <div class="item"><b id="cert-score">-</b><span>Score</span></div>
+      <div class="item"><b id="cert-percent">-</b><span>Percent</span></div>
     </div>
 
     <div id="cert-tier-badge" class="cert-tier-badge">-</div>
@@ -130,9 +130,9 @@
   const percent = Math.round((score / total) * 100);
 
   const tierConfig = {
-    Gold:   { color: "#facc15", bg: "rgba(250,204,21,0.15)", border: "#facc15", label: "🥇 GeoSight Master Badge", heading: `Sempurna, ${name}!`, ringColor: "#facc15" },
-    Green:  { color: "#34d399", bg: "rgba(52,211,153,0.15)", border: "#34d399", label: "🥈 Geometry Explorer Badge", heading: `Hebat, ${name}!`, ringColor: "#34d399" },
-    Silver: { color: "#94a3b8", bg: "rgba(148,163,184,0.15)", border: "#94a3b8", label: "🎖️ Participation Certificate", heading: `Tahniah, ${name}!`, ringColor: "#94a3b8" }
+    Gold:   { color: "#facc15", bg: "rgba(250,204,21,0.15)", border: "#facc15", label: "🥇 GeoSight Master Badge", heading: `Perfect, ${name}!`, ringColor: "#facc15" },
+    Green:  { color: "#34d399", bg: "rgba(52,211,153,0.15)", border: "#34d399", label: "🥈 Geometry Explorer Badge", heading: `Great job, ${name}!`, ringColor: "#34d399" },
+    Silver: { color: "#94a3b8", bg: "rgba(148,163,184,0.15)", border: "#94a3b8", label: "🎖️ Participation Certificate", heading: `Congratulations, ${name}!`, ringColor: "#94a3b8" }
   };
   const cfg = tierConfig[tier] || tierConfig.Silver;
 
