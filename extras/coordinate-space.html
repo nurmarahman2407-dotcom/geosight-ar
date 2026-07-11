@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ms">
+<html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
@@ -27,26 +27,39 @@
       -->
       <a-entity id="axis-group" scale="0.4 0.4 0.4">
 
-        <!-- ── 3 Paksi Utama (X=merah, Y=hijau, Z=biru) ── -->
-        <a-entity line="start: -5 0 0; end: 5 0 0; color: #ef4444"></a-entity>
-        <a-entity line="start: 0 -5 0; end: 0 5 0; color: #22c55e"></a-entity>
-        <a-entity line="start: 0 0 -5; end: 0 0 5; color: #3b82f6"></a-entity>
+        <!--
+          ── 3 Paksi Utama (X=merah, Y=hijau, Z=biru) ──
+          PENTING: guna SILINDER sebenar (bukan komponen "line" A-Frame).
+          "line" A-Frame bergantung pada WebGL GL_LINES yang KEBANYAKAN
+          browser/GPU paksa lebar 1px SAHAJA (had platform, bukan bug kita)
+          — itu punca axis nampak "tak jelas" walau apa pun kita cuba.
+          Silinder ialah mesh 3D sebenar, jadi boleh dibuat SETEBAL mana pun.
+        -->
+        <a-cylinder position="0 0 0" rotation="0 0 -90" radius="0.05" height="10" color="#ef4444"></a-cylinder>
+        <a-cylinder position="0 0 0" rotation="0 0 0"   radius="0.05" height="10" color="#22c55e"></a-cylinder>
+        <a-cylinder position="0 0 0" rotation="90 0 0"  radius="0.05" height="10" color="#3b82f6"></a-cylinder>
 
-        <!-- Penanda hujung paksi positif (bola kecil, bukan teks — elak isu font AR) -->
-        <a-sphere position="5 0 0"  radius="0.12" color="#ef4444"></a-sphere>
-        <a-sphere position="0 5 0"  radius="0.12" color="#22c55e"></a-sphere>
-        <a-sphere position="0 0 5"  radius="0.12" color="#3b82f6"></a-sphere>
+        <!-- Penanda hujung paksi positif (bola — lebih besar supaya jelas) -->
+        <a-sphere position="5 0 0"  radius="0.16" color="#ef4444"></a-sphere>
+        <a-sphere position="0 5 0"  radius="0.16" color="#22c55e"></a-sphere>
+        <a-sphere position="0 0 5"  radius="0.16" color="#3b82f6"></a-sphere>
 
         <!-- Origin marker -->
-        <a-sphere position="0 0 0" radius="0.08" color="#ffffff" opacity="0.8"></a-sphere>
+        <a-sphere position="0 0 0" radius="0.11" color="#ffffff" opacity="0.9"></a-sphere>
 
-        <!-- ── Guide lines (langkah bina titik: X → Y → Z) — mula tersembunyi ── -->
-        <a-entity id="guide-x" line="start: 0 0 0; end: 0 0 0; color: #f87171; opacity: 0.9"></a-entity>
-        <a-entity id="guide-y" line="start: 0 0 0; end: 0 0 0; color: #4ade80; opacity: 0.9"></a-entity>
-        <a-entity id="guide-z" line="start: 0 0 0; end: 0 0 0; color: #60a5fa; opacity: 0.9"></a-entity>
+        <!--
+          ── Guide lines (langkah bina titik: X → Y → Z) ──
+          Sama prinsip: silinder, bukan "line". Sebab tiap segmen ni
+          SENTIASA selari dengan 1 paksi sahaja (X dulu, Y, baru Z),
+          kita boleh guna rotation TETAP yang sama macam paksi utama —
+          tak perlu kira sudut kompleks, cuma tukar panjang & kedudukan.
+        -->
+        <a-cylinder id="guide-x" position="0 0 0" rotation="0 0 -90" radius="0.045" height="0.001" color="#f87171" visible="false"></a-cylinder>
+        <a-cylinder id="guide-y" position="0 0 0" rotation="0 0 0"   radius="0.045" height="0.001" color="#4ade80" visible="false"></a-cylinder>
+        <a-cylinder id="guide-z" position="0 0 0" rotation="90 0 0"  radius="0.045" height="0.001" color="#60a5fa" visible="false"></a-cylinder>
 
         <!-- ── Titik akhir yang diplot ── -->
-        <a-sphere id="plotted-point" position="0 0 0" radius="0.16" color="#ec4899" visible="false">
+        <a-sphere id="plotted-point" position="0 0 0" radius="0.22" color="#ec4899" visible="false">
           <a-animation attribute="scale" from="1 1 1" to="1.3 1.3 1.3" direction="alternate"
                        dur="700" repeat="indefinite" easing="easeInOutSine"></a-animation>
         </a-sphere>
@@ -69,7 +82,7 @@
   </div>
 
   <div class="overlay-top">
-    <a href="../index.html" class="back-btn">←</a>
+    <a href="../index.html" class="menu-btn">🏠 Menu</a>
     <span class="mission-badge">BONUS TOOL</span>
   </div>
 
@@ -83,10 +96,10 @@
     <span class="chip"><span class="dot-z"></span> Z-AXIS</span>
   </div>
 
-  <div class="marker-hint"><span class="dot"></span> Arahkan kamera ke Hiro marker</div>
+  <div class="marker-hint"><span class="dot"></span> Point camera at Hiro marker</div>
 
   <div class="coord-panel">
-    <span class="coord-label">Masukkan Koordinat (x, y, z)</span>
+    <span class="coord-label">Enter Coordinates (x, y, z)</span>
     <div class="coord-inputs">
       <div class="coord-field x">
         <label>X</label>
@@ -102,10 +115,10 @@
       </div>
     </div>
     <div class="coord-actions">
-      <button id="plot-btn" class="btn btn-primary">📍 Plot Titik</button>
+      <button id="plot-btn" class="btn btn-primary">📍 Plot Point</button>
       <button id="reset-btn" class="btn btn-secondary">↺ Reset</button>
     </div>
-    <div id="coord-readout" class="coord-readout">Titik semasa: (0, 0, 0)</div>
+    <div id="coord-readout" class="coord-readout">Current point: (0, 0, 0)</div>
   </div>
 
 </div>
@@ -135,22 +148,24 @@
   }
 
   /**
-   * PENTING — pembetulan bug "koordinat asyik jadi 5,5,5":
-   * A-Frame punya komponen "line" ada quirk dikenali — bila kita
-   * setAttribute("line", ...) berulang kali pada entiti YANG SAMA,
-   * geometri kadang tersekat pada nilai pertama yang berjaya dilukis
-   * (tak refresh betul-betul). Penyelesaian selamat: BUANG entiti garis
-   * lama dan CIPTA BARU setiap kali plot — jamin selalu tepat.
+   * Kemas kini 1 silinder panduan supaya panjangnya = jarak sebenar,
+   * dan kedudukannya di TITIK TENGAH antara start-value dan end-value
+   * sepanjang 1 paksi (rotation dah tetap, ditentukan dalam HTML).
+   *
+   * axis: "x" | "y" | "z" — tentukan macam mana position dikira
    */
-  function redrawGuideLine(id, startStr, endStr, color) {
-    const old = document.getElementById(id);
-    const parent = old.parentNode;
-    old.parentNode.removeChild(old);
+  function updateGuideCylinder(id, axis, fromVal, toVal, otherA, otherB) {
+    const el = document.getElementById(id);
+    const length = Math.abs(toVal - fromVal);
+    const mid = (fromVal + toVal) / 2;
 
-    const fresh = document.createElement("a-entity");
-    fresh.setAttribute("id", id);
-    fresh.setAttribute("line", `start: ${startStr}; end: ${endStr}; color: ${color}; opacity: 0.9`);
-    parent.appendChild(fresh);
+    el.setAttribute("height", Math.max(length, 0.001));
+
+    if (axis === "x") el.setAttribute("position", `${mid} 0 0`);
+    if (axis === "y") el.setAttribute("position", `${otherA} ${mid} 0`);
+    if (axis === "z") el.setAttribute("position", `${otherA} ${otherB} ${mid}`);
+
+    el.setAttribute("visible", length > 0.001 ? "true" : "false");
   }
 
   function plotPoint() {
@@ -159,17 +174,17 @@
     const z = readCoord("input-z");
 
     // Langkah 1: dari origin sepanjang paksi-X
-    redrawGuideLine("guide-x", "0 0 0", `${x} 0 0`, "#f87171");
-    // Langkah 2: dari hujung-X, gerak sepanjang paksi-Y
-    redrawGuideLine("guide-y", `${x} 0 0`, `${x} ${y} 0`, "#4ade80");
-    // Langkah 3: dari situ, naik/turun sepanjang paksi-Z ke titik akhir
-    redrawGuideLine("guide-z", `${x} ${y} 0`, `${x} ${y} ${z}`, "#60a5fa");
+    updateGuideCylinder("guide-x", "x", 0, x);
+    // Langkah 2: dari hujung-X, gerak sepanjang paksi-Y (pada offset-x)
+    updateGuideCylinder("guide-y", "y", 0, y, x);
+    // Langkah 3: dari situ, naik/turun sepanjang paksi-Z (pada offset x,y)
+    updateGuideCylinder("guide-z", "z", 0, z, x, y);
 
     const point = document.getElementById("plotted-point");
     point.setAttribute("position", `${x} ${y} ${z}`);
     point.setAttribute("visible", "true");
 
-    document.getElementById("coord-readout").textContent = `Titik semasa: (${x}, ${y}, ${z})`;
+    document.getElementById("coord-readout").textContent = `Current point: (${x}, ${y}, ${z})`;
 
     SheetConnector.send({
       sheet: "Mission_Log",
@@ -183,11 +198,13 @@
 
   function resetPoint() {
     ["input-x", "input-y", "input-z"].forEach((id) => (document.getElementById(id).value = 0));
-    redrawGuideLine("guide-x", "0 0 0", "0 0 0", "#f87171");
-    redrawGuideLine("guide-y", "0 0 0", "0 0 0", "#4ade80");
-    redrawGuideLine("guide-z", "0 0 0", "0 0 0", "#60a5fa");
+    ["guide-x", "guide-y", "guide-z"].forEach((id) => {
+      const el = document.getElementById(id);
+      el.setAttribute("height", "0.001");
+      el.setAttribute("visible", "false");
+    });
     document.getElementById("plotted-point").setAttribute("visible", "false");
-    document.getElementById("coord-readout").textContent = "Titik semasa: (0, 0, 0)";
+    document.getElementById("coord-readout").textContent = "Current point: (0, 0, 0)";
   }
 
   document.getElementById("plot-btn").addEventListener("click", plotPoint);
