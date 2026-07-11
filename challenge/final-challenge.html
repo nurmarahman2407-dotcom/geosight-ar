@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ms">
+<html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
@@ -76,7 +76,7 @@
   </div>
 
   <div class="overlay-top">
-    <a href="../index.html" class="back-btn">←</a>
+    <a href="../index.html" class="menu-btn">🏠 Menu</a>
     <span class="mission-badge">MASTERY TEST</span>
   </div>
 
@@ -84,7 +84,7 @@
     <h1 class="mission-title">🚀 FINAL CHALLENGE</h1>
   </div>
 
-  <div class="marker-hint"><span class="dot"></span> Tekan "View in AR" untuk lihat bentuk sebenar</div>
+  <div class="marker-hint"><span class="dot"></span> Tap "View in AR" to see the actual shape</div>
 
   <!-- ═══════════ Kad Soalan ═══════════ -->
   <div class="fc-card">
@@ -113,35 +113,35 @@
   const questions = [
     {
       shape: "cube",
-      question: 'Sebuah dadu permainan mempunyai sisi 2.5 cm. Berapakah jumlah luas permukaannya?',
+      question: 'A gaming die has sides of 2.5 cm. What is its total surface area?',
       options: ["15 cm²", "37.5 cm²", "25 cm²", "75 cm²"],
       correct: 1,
       explanation: "SA = 6a² = 6 × (2.5)² = 6 × 6.25 = 37.5 cm²"
     },
     {
       shape: "cuboid",
-      question: "Kotak hadiah berbentuk kuboid bersaiz 6cm × 4cm × 3cm. Berapakah jumlah luas permukaan kotak?",
+      question: "A gift box shaped like a cuboid measures 6cm × 4cm × 3cm. What is the total surface area of the box?",
       options: ["72 cm²", "96 cm²", "108 cm²", "144 cm²"],
       correct: 2,
       explanation: "SA = 2(lw+lh+wh) = 2(24+18+12) = 2(54) = 108 cm²"
     },
     {
       shape: "cylinder",
-      question: "Tangki air berbentuk silinder berjejari 4cm dan tinggi 10cm. Berapakah isipadu air (guna π = 3.14)?",
+      question: "A cylindrical water tank has a radius of 4cm and height of 10cm. What is the volume of water (use π = 3.14)?",
       options: ["125.6 cm³", "251.2 cm³", "502.4 cm³", "1004.8 cm³"],
       correct: 2,
       explanation: "V = πr²h = 3.14 × 4² × 10 = 3.14 × 16 × 10 = 502.4 cm³"
     },
     {
       shape: "pyramid",
-      question: "Piramid tapak persegi dengan sisi tapak 6cm dan tinggi sisi (slant height) 10cm. Berapakah jumlah luas permukaan?",
+      question: "A square-based pyramid has a base side of 6cm and slant height of 10cm. What is the total surface area?",
       options: ["96 cm²", "120 cm²", "156 cm²", "180 cm²"],
       correct: 2,
       explanation: "SA = a² + 4(½ × a × l) = 36 + 4(30) = 36 + 120 = 156 cm²"
     },
     {
       shape: "sphere",
-      question: "Belon berbentuk sfera berjejari 6cm. Berapakah jumlah luas permukaan (guna π = 3.14)?",
+      question: "A spherical balloon has a radius of 6cm. What is the total surface area (use π = 3.14)?",
       options: ["226.08 cm²", "452.16 cm²", "904.32 cm²", "113.04 cm²"],
       correct: 1,
       explanation: "SA = 4πr² = 4 × 3.14 × 36 = 452.16 cm²"
@@ -205,7 +205,7 @@
     }
 
     const expl = document.getElementById("fc-explanation");
-    expl.textContent = (isCorrect ? "✅ Betul! " : "❌ ") + q.explanation;
+    expl.textContent = (isCorrect ? "✅ Correct! " : "❌ ") + q.explanation;
     expl.style.display = "block";
     document.getElementById("fc-next-btn").style.display = "block";
 
