@@ -21,9 +21,13 @@ class ARMissionController {
     this.netPieces = config.netPieces || null;
 
     this.quiz = config.quiz;
+    this.realLife = config.realLife || null; // {targetIds:[...], material:"...", extraIds:[...]}
+    this.realLifeActive = false;
+    this.edgeIds = config.edgeIds || [];       // id elemen yang perlu garis sempadan hitam jelas
     this.startTime = Date.now();
     this.unfolded = false;
     this.currentRotationY = 0;
+    this.currentRotationX = 0;
   }
 
   init() {
@@ -31,32 +35,103 @@ class ARMissionController {
     const checkBtn = document.getElementById("check-answer-btn");
     const rotateLeftBtn = document.getElementById("rotate-left-btn");
     const rotateRightBtn = document.getElementById("rotate-right-btn");
+    const rotateUpBtn = document.getElementById("rotate-up-btn");
+    const rotateDownBtn = document.getElementById("rotate-down-btn");
     const showQuizBtn = document.getElementById("show-quiz-btn");
+    const realLifeBtn = document.getElementById("reallife-btn");
 
     if (unfoldBtn) unfoldBtn.addEventListener("click", () => this.toggleUnfold());
     if (checkBtn) checkBtn.addEventListener("click", () => this.checkAnswer());
-    if (rotateLeftBtn) rotateLeftBtn.addEventListener("click", () => this.rotate(-45));
-    if (rotateRightBtn) rotateRightBtn.addEventListener("click", () => this.rotate(45));
+    if (rotateLeftBtn) rotateLeftBtn.addEventListener("click", () => this.rotate("y", -45));
+    if (rotateRightBtn) rotateRightBtn.addEventListener("click", () => this.rotate("y", 45));
+    if (rotateUpBtn) rotateUpBtn.addEventListener("click", () => this.rotate("x", -30));
+    if (rotateDownBtn) rotateDownBtn.addEventListener("click", () => this.rotate("x", 30));
     if (showQuizBtn) showQuizBtn.addEventListener("click", () => this.showQuiz());
+    if (realLifeBtn) realLifeBtn.addEventListener("click", () => this.toggleRealLife());
 
+    this._addEdgeOutlines();
     this.logAction("scene_loaded");
   }
 
   /**
-   * Manual rotate — murid kawal sendiri sudut pandangan (bukan
-   * auto-spin berterusan). Sekali sahaja tekan rotate, auto-spin awal
-   * dihentikan terus supaya bentuk tak "melawan" kawalan murid.
+   * Garis sempadan hitam jelas pada setiap muka — "setiap permukaan
+   * nampak jelas" macam carta rujukan (bukan cuma warna rata tanpa
+   * sempadan). Guna THREE.EdgesGeometry (bukan wireframe biasa yang
+   * tunjuk garis pepenjuru palsu merentasi muka rata).
    */
-  rotate(degrees) {
+  _addEdgeOutlines() {
+    this.edgeIds.forEach((id) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+
+      const attach = () => {
+        const mesh = el.getObject3D("mesh");
+        if (!mesh || !mesh.geometry) return;
+        const THREE = window.AFRAME.THREE;
+        const edgesGeo = new THREE.EdgesGeometry(mesh.geometry, 15);
+        const edgesMat = new THREE.LineBasicMaterial({ color: 0x000000 });
+        const edgeLines = new THREE.LineSegments(edgesGeo, edgesMat);
+        mesh.add(edgeLines);
+      };
+
+      if (el.hasLoaded) attach();
+      else el.addEventListener("loaded", attach, { once: true });
+    });
+  }
+
+  /**
+   * Toggle "Contoh Sebenar" — tukar skin bentuk geometri (warna
+   * mengajar seragam) jadi rupa objek harian (dadu, tin, kon aiskrim,
+   * dll). Cuma tersedia semasa bentuk masih "folded" (pepejal utuh) —
+   * bila unfold, butang ni disembunyikan (dikawal dalam toggleUnfold()).
+   */
+  toggleRealLife() {
+    if (!this.realLife) return;
+    this.realLifeActive = !this.realLifeActive;
+
+    this.realLife.targetIds.forEach((id) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      if (this.realLifeActive) {
+        if (!el.dataset.origMaterial) el.dataset.origMaterial = el.getAttribute("material");
+        el.setAttribute("material", this.realLife.material);
+      } else if (el.dataset.origMaterial) {
+        el.setAttribute("material", el.dataset.origMaterial);
+      }
+    });
+
+    (this.realLife.extraIds || []).forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.setAttribute("visible", this.realLifeActive.toString());
+    });
+
+    const btn = document.getElementById("reallife-btn");
+    if (btn) btn.textContent = this.realLifeActive ? "📐 Show Geometric Shape" : "🌍 View Real-Life Example";
+
+    this.logAction(this.realLifeActive ? "reallife_viewed" : "reallife_exit");
+  }
+
+  /**
+   * Rotate penuh — kawalan 2 paksi: Y (kiri/kanan) DAN X (atas/bawah),
+   * supaya murid boleh pusing tengok SEMUA sudut termasuk muka atas &
+   * bawah bentuk, bukan sekadar berpusing kiri-kanan sahaja.
+   */
+  rotate(axis, degrees) {
     this._stopAutoSpin();
     if (!this.groupId) return;
     const group = document.getElementById(this.groupId);
     if (!group) return;
 
-    this.currentRotationY += degrees;
+    if (axis === "y") {
+      this.currentRotationY += degrees;
+    } else if (axis === "x") {
+      // Had ±75° supaya tak "terbalik" sepenuhnya — kekal senang orientasi
+      this.currentRotationX = Math.max(-75, Math.min(75, this.currentRotationX + degrees));
+    }
+
     group.setAttribute(
       "animation__manualrotate",
-      `property: rotation; to: 0 ${this.currentRotationY} 0; dur: 500; easing: easeOutQuad`
+      `property: rotation; to: ${this.currentRotationX} ${this.currentRotationY} 0; dur: 500; easing: easeOutQuad`
     );
   }
 
@@ -81,6 +156,10 @@ class ARMissionController {
 
     if (this.unfolded) this._spawnSparkles();
 
+    // Kalau sedang dalam mod "Contoh Sebenar", keluar dulu bila unfold —
+    // elak skin objek harian tercalar/pelik semasa bentuk terbuka jadi net
+    if (this.unfolded && this.realLifeActive) this.toggleRealLife();
+
     const btn = document.getElementById("unfold-btn");
     if (btn) btn.textContent = this.unfolded ? "🔄 Fold Back" : "📐 Unfold Net";
 
@@ -88,6 +167,11 @@ class ARMissionController {
     // murid kawal sendiri bila nak beralih dari explore ke assessment
     const showQuizBtn = document.getElementById("show-quiz-btn");
     if (showQuizBtn) showQuizBtn.style.display = this.unfolded ? "flex" : "none";
+
+    // Butang "Contoh Sebenar" pula cuma masuk akal semasa bentuk masih
+    // pepejal utuh (folded) — sembunyi bila unfolded
+    const realLifeBtn = document.getElementById("reallife-btn");
+    if (realLifeBtn) realLifeBtn.style.display = (this.unfolded || !this.realLife) ? "none" : "flex";
 
     this.logAction(this.unfolded ? "unfold_viewed" : "fold_viewed");
 
@@ -195,8 +279,8 @@ class ARMissionController {
     const correct = !isNaN(val) && Math.abs(val - this.quiz.correctAnswer) < 0.5;
 
     feedback.textContent = correct
-      ? `✅ Betul! ${this.quiz.explanation}`
-      : `❌ Belum tepat. Hint: ${this.quiz.formulaHint}`;
+      ? `✅ Correct! ${this.quiz.explanation}`
+      : `❌ Not quite. Hint: ${this.quiz.formulaHint}`;
     feedback.className = "feedback " + (correct ? "correct" : "incorrect");
 
     const timeSpentSec = Math.round((Date.now() - this.startTime) / 1000);
