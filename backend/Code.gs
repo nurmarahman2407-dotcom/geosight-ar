@@ -1,15 +1,15 @@
 /**
  * GeoSight AR — Backend API (Google Apps Script)
  *
- * CARA SETUP:
- * 1. Buka Google Sheets baru → Extensions → Apps Script
- * 2. Padam kod default, paste kod ni
- * 3. Deploy → New deployment → pilih type "Web app"
+ * SETUP INSTRUCTIONS:
+ * 1. Open a new Google Sheets → Extensions → Apps Script
+ * 2. Delete the default code, paste this code in
+ * 3. Deploy → New deployment → select type "Web app"
  *      - Execute as: Me
  *      - Who has access: Anyone
- * 4. Salin URL "exec" yang diberi → paste dalam js/sheet-connector.js (apiUrl)
- * 5. Jalankan fungsi setupSheets() SEKALI dari editor (Run > setupSheets)
- *    untuk auto-cipta 4 sheet dengan header yang betul.
+ * 4. Copy the "exec" URL given → paste into js/sheet-connector.js (apiUrl)
+ * 5. Run the setupSheets() function ONCE from the editor (Run > setupSheets)
+ *    to auto-create the 4 sheets with the correct headers.
  */
 
 function doPost(e) {
@@ -68,8 +68,8 @@ function doPost(e) {
 }
 
 /**
- * Jalankan SEKALI je dari editor Apps Script (bukan dari web) untuk
- * auto-cipta 4 sheet dengan header column yang betul.
+ * Run this ONCE from the Apps Script editor (not from the web) to
+ * auto-create the 4 sheets with the correct column headers.
  */
 function setupSheets() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -89,22 +89,23 @@ function setupSheets() {
     sheet.getRange(1, 1, 1, sheets[name].length).setFontWeight("bold");
   });
 
-  Logger.log("✅ Semua 4 sheet siap dengan header!");
+  Logger.log("✅ All 4 sheets ready with headers!");
 }
 
 /**
- * Optional: test manual dari editor Apps Script (Run > doGet)
- * untuk sahkan URL "exec" hidup sebelum sambung dari GitHub Pages.
+ * Optional: manual test from the Apps Script editor (Run > doGet)
+ * to confirm the "exec" URL is alive before connecting from GitHub Pages.
  *
- * PENTING: Apps Script TIDAK hantar header CORS pada response —
- * jadi fetch() biasa dari GitHub Pages untuk BACA data akan gagal
- * (walaupun POST logging tadi ok sebab guna mode:'no-cors' fire-and-forget).
- * Untuk BACA balik data (contoh: Student Dashboard), kita guna teknik
- * JSONP (load sebagai <script> tag, bukan fetch) — ini elak sekatan CORS
- * sepenuhnya sebab <script> tag tak tertakluk kat CORS.
+ * IMPORTANT: Apps Script does NOT send CORS headers on its response —
+ * so a normal fetch() from GitHub Pages to READ data will fail
+ * (even though the POST logging earlier works fine since it uses
+ * mode:'no-cors' fire-and-forget). To READ data back (e.g. Student
+ * Dashboard), we use the JSONP technique (load as a <script> tag,
+ * not fetch) — this fully bypasses CORS restrictions since <script>
+ * tags aren't subject to CORS.
  *
- * Cara guna dari browser: tambah ?callback=namaFungsi&studentName=Ali
- * pada URL exec, response akan jadi "namaFungsi({...data...})"
+ * Usage from browser: add ?callback=functionName&studentName=Ali
+ * to the exec URL, the response will become "functionName({...data...})"
  */
 function doGet(e) {
   const callback = e.parameter.callback;
@@ -131,8 +132,8 @@ function doGet(e) {
 }
 
 /**
- * Baca semua row dalam 1 sheet, tapis ikut StudentName (kolum ke-2),
- * pulangkan sebagai array of objects {header: value}.
+ * Read all rows in a sheet, filtered by StudentName (2nd column),
+ * returned as an array of objects {header: value}.
  */
 function readSheetFiltered_(ss, sheetName, studentName) {
   const sheet = ss.getSheetByName(sheetName);
@@ -145,7 +146,7 @@ function readSheetFiltered_(ss, sheetName, studentName) {
   const rows = data.slice(1);
 
   return rows
-    .filter((row) => !studentName || String(row[1]) === studentName) // kolum B = StudentName
+    .filter((row) => !studentName || String(row[1]) === studentName) // column B = StudentName
     .map((row) => {
       const obj = {};
       headers.forEach((h, i) => (obj[h] = row[i]));
