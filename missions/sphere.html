@@ -28,7 +28,7 @@
     <a-marker preset="hiro">
       <a-entity id="sphere-group" position="0 0 0" scale="0.5 0.5 0.5">
 
-        <a-sphere id="sphere-solid" radius="0.4" material="color: #34d399; emissive: #34d399; emissiveIntensity: 0.22; roughness: 0.3; metalness: 0.15; opacity: 1"></a-sphere>
+        <a-sphere id="sphere-solid" radius="0.4" material="color: #fbbf24; emissive: #fbbf24; emissiveIntensity: 0.22; roughness: 0.3; metalness: 0.15; opacity: 1"></a-sphere>
 
         <!--
           Nota teknikal PENTING: sfera TAK BOLEH dibuka jadi rata sepenuhnya
@@ -36,12 +36,16 @@
           drpd bentuk lain. Kita tunjuk "orange-peel gores" (6 jalur) sebagai
           anggaran visual sahaja, bukan net tepat.
         -->
-        <a-sphere id="gore-0" radius="0.4" phi-start="0"   phi-length="60" theta-length="180" material="color: #22d3ee; emissive: #22d3ee; emissiveIntensity: 0.22; roughness: 0.3; metalness: 0.15; opacity: 1" visible="false"></a-sphere>
-        <a-sphere id="gore-1" radius="0.4" phi-start="60"  phi-length="60" theta-length="180" material="color: #a855f7; emissive: #a855f7; emissiveIntensity: 0.22; roughness: 0.3; metalness: 0.15; opacity: 1" visible="false"></a-sphere>
-        <a-sphere id="gore-2" radius="0.4" phi-start="120" phi-length="60" theta-length="180" material="color: #ec4899; emissive: #ec4899; emissiveIntensity: 0.22; roughness: 0.3; metalness: 0.15; opacity: 1" visible="false"></a-sphere>
-        <a-sphere id="gore-3" radius="0.4" phi-start="180" phi-length="60" theta-length="180" material="color: #22d3ee; emissive: #22d3ee; emissiveIntensity: 0.22; roughness: 0.3; metalness: 0.15; opacity: 1" visible="false"></a-sphere>
-        <a-sphere id="gore-4" radius="0.4" phi-start="240" phi-length="60" theta-length="180" material="color: #a855f7; emissive: #a855f7; emissiveIntensity: 0.22; roughness: 0.3; metalness: 0.15; opacity: 1" visible="false"></a-sphere>
-        <a-sphere id="gore-5" radius="0.4" phi-start="300" phi-length="60" theta-length="180" material="color: #ec4899; emissive: #ec4899; emissiveIntensity: 0.22; roughness: 0.3; metalness: 0.15; opacity: 1" visible="false"></a-sphere>
+        <a-sphere id="gore-0" radius="0.4" phi-start="0"   phi-length="60" theta-length="180" material="color: #fbbf24; emissive: #fbbf24; emissiveIntensity: 0.22; roughness: 0.3; metalness: 0.15; opacity: 1" visible="false"></a-sphere>
+        <a-sphere id="gore-1" radius="0.4" phi-start="60"  phi-length="60" theta-length="180" material="color: #fbbf24; emissive: #fbbf24; emissiveIntensity: 0.22; roughness: 0.3; metalness: 0.15; opacity: 1" visible="false"></a-sphere>
+        <a-sphere id="gore-2" radius="0.4" phi-start="120" phi-length="60" theta-length="180" material="color: #fbbf24; emissive: #fbbf24; emissiveIntensity: 0.22; roughness: 0.3; metalness: 0.15; opacity: 1" visible="false"></a-sphere>
+        <a-sphere id="gore-3" radius="0.4" phi-start="180" phi-length="60" theta-length="180" material="color: #fbbf24; emissive: #fbbf24; emissiveIntensity: 0.22; roughness: 0.3; metalness: 0.15; opacity: 1" visible="false"></a-sphere>
+        <a-sphere id="gore-4" radius="0.4" phi-start="240" phi-length="60" theta-length="180" material="color: #fbbf24; emissive: #fbbf24; emissiveIntensity: 0.22; roughness: 0.3; metalness: 0.15; opacity: 1" visible="false"></a-sphere>
+        <a-sphere id="gore-5" radius="0.4" phi-start="300" phi-length="60" theta-length="180" material="color: #fbbf24; emissive: #fbbf24; emissiveIntensity: 0.22; roughness: 0.3; metalness: 0.15; opacity: 1" visible="false"></a-sphere>
+
+        <!-- Dekorasi "jahitan bola keranjang" — tersembunyi, muncul dalam mod Contoh Sebenar -->
+        <a-torus id="ball-seam-1" radius="0.4" radius-tubular="0.012" color="#1a1a1a" visible="false"></a-torus>
+        <a-torus id="ball-seam-2" radius="0.4" radius-tubular="0.012" color="#1a1a1a" rotation="90 0 0" visible="false"></a-torus>
 
         <a-animation id="auto-spin" attribute="rotation" to="0 360 0" dur="8000" easing="linear" repeat="indefinite"></a-animation>
       </a-entity>
@@ -57,7 +61,7 @@
   </div>
 
   <div class="overlay-top">
-    <a href="../index.html" class="back-btn">←</a>
+    <a href="../index.html" class="menu-btn">🏠 Menu</a>
     <span class="mission-badge">MISSION 06 / 06</span>
   </div>
 
@@ -65,7 +69,7 @@
     <h1 class="mission-title">🌐 SPHERE MISSION</h1>
   </div>
 
-  <div class="sphere-note">💡 Sfera tak boleh "dibuka rata" macam kiub — jalur "orange-peel" ni tunjuk kenapa formula luas permukaannya unik!</div>
+  <div class="sphere-note">💡 A sphere can't be "unfolded flat" like a cube — these "orange-peel" strips show why its surface area formula is unique!</div>
 
   <div class="properties-panel">
     <div class="stat"><b>1</b><span>Faces</span></div>
@@ -73,25 +77,31 @@
     <div class="stat"><b>0</b><span>Vertices</span></div>
   </div>
 
-  <div class="marker-hint"><span class="dot"></span> Awaiting marker — arahkan kamera ke Hiro marker</div>
+  <div class="marker-hint"><span class="dot"></span> Awaiting marker — point camera at Hiro marker</div>
 
   <div class="action-bar">
-    <button id="rotate-left-btn" class="btn btn-rotate">⟲</button>
-    <button id="unfold-btn" class="btn btn-primary">🍊 Peel Open</button>
+    <button id="rotate-up-btn" class="btn btn-rotate">▲</button>
+    <div class="rotate-row">
+      <button id="rotate-left-btn" class="btn btn-rotate">⟲</button>
+      <button id="unfold-btn" class="btn btn-primary">🍊 Peel Open</button>
+      <button id="rotate-right-btn" class="btn btn-rotate">⟳</button>
+    </div>
+    <button id="rotate-down-btn" class="btn btn-rotate">▼</button>
   </div>
 
-  <button id="show-quiz-btn" class="show-quiz-btn">📝 Jawab Quiz Bila Anda Sedia</button>
+  <button id="reallife-btn" class="reallife-btn">🌍 View Real-Life Example</button>
+  <button id="show-quiz-btn" class="show-quiz-btn">📝 Answer Quiz When Ready</button>
 
   <div id="quiz-panel" class="quiz-panel">
     <div class="quiz-handle"></div>
     <span class="quiz-label">Application Challenge</span>
     <div class="quiz-question">
-      Belon berbentuk sfera perlu dibalut bahan hiasan. Jejari belon <b>6cm</b>.
-      Berapakah jumlah luas permukaan (cm²)? Guna π = 3.14
+      A spherical balloon needs to be covered with decorative material. The balloon has a radius of <b>6cm</b>.
+      What is the total surface area (cm²)? Use π = 3.14
     </div>
     <div class="quiz-formula">SA = 4πr²</div>
     <div class="quiz-input-row">
-      <input type="number" id="quiz-answer" placeholder="Jawapan dalam cm²" />
+      <input type="number" id="quiz-answer" placeholder="Answer in cm²" />
       <button id="check-answer-btn" class="btn btn-success">✓ Check</button>
     </div>
     <div id="quiz-feedback" class="feedback"></div>
@@ -107,6 +117,12 @@
     studentName: localStorage.getItem("geosight_student_name") || "Guest",
     groupId: "sphere-group",
     autoSpinId: "auto-spin",
+
+    realLife: {
+      targetIds: ["sphere-solid"],
+      material: "color: #ea580c; emissive: #ea580c; emissiveIntensity: 0.15; roughness: 0.5; metalness: 0; opacity: 1",
+      extraIds: ["ball-seam-1", "ball-seam-2"]
+    },
     mode: "reveal",
 
     solidId: "sphere-solid",
@@ -120,7 +136,7 @@
     ],
 
     quiz: {
-      question: "Luas permukaan sfera jejari 6cm",
+      question: "Surface area of sphere, radius 6cm",
       correctAnswer: 452.16,
       formulaHint: "SA = 4πr² → 4 × 3.14 × 6²",
       explanation: "SA = 4πr² = 4 × 3.14 × 36 = 452.16 cm²"
