@@ -12,11 +12,11 @@
 const SheetConnector = {
   // GANTI dengan URL Apps Script exec anda sendiri, contoh:
   // "https://script.google.com/macros/s/AKfycb.../exec"
-  apiUrl: "https://script.google.com/macros/s/AKfycbwXtrnut0DpRjM1Ltex-2amnZD7rj7XUn4ppU9oIStsfARu6mPMpF3GZanB5oc-pcAwIw/exec",
+  apiUrl: "PASTE_YOUR_APPS_SCRIPT_EXEC_URL_HERE",
 
   send(payload) {
     if (!this.apiUrl || this.apiUrl.startsWith("PASTE_")) {
-      console.warn("[SheetConnector] URL belum di-set — data ini TIDAK dihantar:", payload);
+      console.warn("[SheetConnector] URL not set yet — this data was NOT sent:", payload);
       return Promise.resolve(false);
     }
     return fetch(this.apiUrl, {
@@ -27,7 +27,7 @@ const SheetConnector = {
     })
       .then(() => true)
       .catch((err) => {
-        console.warn("[SheetConnector] Hantar gagal (tak kritikal, murid boleh terus):", err);
+        console.warn("[SheetConnector] Send failed (non-critical, student can continue):", err);
         return false;
       });
   },
@@ -39,7 +39,7 @@ const SheetConnector = {
   fetchData(studentName, timeoutMs = 8000) {
     return new Promise((resolve, reject) => {
       if (!this.apiUrl || this.apiUrl.startsWith("PASTE_")) {
-        reject(new Error("SheetConnector URL belum di-set"));
+        reject(new Error("SheetConnector URL not set yet"));
         return;
       }
 
@@ -60,11 +60,11 @@ const SheetConnector = {
 
       script.src = `${this.apiUrl}?callback=${callbackName}&studentName=${encodeURIComponent(studentName || "")}`;
       script.onerror = () => {
-        if (!settled) { cleanup(); reject(new Error("Gagal load data dari Sheets")); }
+        if (!settled) { cleanup(); reject(new Error("Failed to load data from Sheets")); }
       };
 
       setTimeout(() => {
-        if (!settled) { cleanup(); reject(new Error("Timeout — Sheets tak respon")); }
+        if (!settled) { cleanup(); reject(new Error("Timeout — Sheets did not respond")); }
       }, timeoutMs);
 
       document.body.appendChild(script);
