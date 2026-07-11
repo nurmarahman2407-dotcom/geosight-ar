@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ms">
+<html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -49,49 +49,49 @@
 
 <div class="hub">
   <div class="top-row">
-    <a href="../index.html" class="back-btn" style="position:static;">←</a>
+    <a href="../index.html" class="menu-btn">🏠 Menu</a>
     <h1 class="page-title">🌍 Real-World Mission</h1>
     <span style="width:38px"></span>
   </div>
 
   <div class="panel">
     <h3>📦 GeoSight Delivery — Pallet Packing Challenge</h3>
-    <p><b>Objektif Pembelajaran:</b></p>
+    <p><b>Learning Objectives:</b></p>
     <ul>
-      <li>Kaitkan isipadu dengan susunan ruang</li>
-      <li>Tentukan saiz kotak paling efisien untuk penghantaran</li>
-      <li>Justifikasi pilihan menggunakan penaakulan matematik</li>
+      <li>Connect volume to spatial arrangement</li>
+      <li>Determine the most efficient box size for delivery</li>
+      <li>Justify your choice using mathematical reasoning</li>
     </ul>
 
     <div class="given-box">
-      Unit Logistik GeoSight perlu menghantar produk menggunakan palet standard.<br/><br/>
-      • Saiz palet: <b>100cm × 100cm</b><br/>
-      • Saiz kotak semasa: <b>25cm × 25cm × 20cm</b><br/>
-      • Kotak boleh <b>diputar</b> (contoh: 25×20 di atas palet)<br/><br/>
-      Tugasan anda: cari <b>susunan terbaik</b> supaya palet boleh membawa sebanyak mungkin kotak.
+      The GeoSight Logistics Unit needs to deliver products using a standard pallet.<br/><br/>
+      • Pallet size: <b>100cm × 100cm</b><br/>
+      • Current box size: <b>25cm × 25cm × 20cm</b><br/>
+      • Boxes can be <b>rotated</b> (e.g., 25×20 on the pallet)<br/><br/>
+      Your task: find the <b>best arrangement</b> so the pallet can carry as many boxes as possible.
     </div>
   </div>
 
   <div class="panel">
-    <h3>Part A — Susunan Asas</h3>
-    <p>1. Palet bersaiz 100cm × 100cm. Tapak kotak ialah 25cm × 25cm.<br/>
-       <b>a.</b> Berapa banyak kotak boleh muat di atas palet jika disusun tanpa putaran?</p>
-    <input type="text" id="answer-a" class="q-input" placeholder="Jawapan (bilangan kotak)" />
+    <h3>Part A — Basic Arrangement</h3>
+    <p>1. The pallet is 100cm × 100cm. The box base is 25cm × 25cm.<br/>
+       <b>a.</b> How many boxes can fit on the pallet if arranged without rotation?</p>
+    <input type="text" id="answer-a" class="q-input" placeholder="Answer (number of boxes)" />
   </div>
 
   <div class="panel">
-    <h3>Part B — Strategi Putaran</h3>
-    <p>2. Jika kotak diletak dengan tapak 25cm × 20cm, berapakah bilangan maksimum kotak yang boleh muat?</p>
-    <input type="text" id="answer-b" class="q-input" placeholder="Jawapan (bilangan kotak)" />
+    <h3>Part B — Rotation Strategy</h3>
+    <p>2. If the box is placed with a 25cm × 20cm base, what is the maximum number of boxes that can fit?</p>
+    <input type="text" id="answer-b" class="q-input" placeholder="Answer (number of boxes)" />
   </div>
 
   <button id="check-btn" class="btn btn-primary" style="width:100%; justify-content:center;">🔒 Check Answers</button>
 
   <div id="solution-box" class="solution-box panel">
     <h3>✅ Model Answers</h3>
-    <p><b>Part A:</b> 100÷25 = 4 kotak sepanjang, 4×4 = <b>16 kotak</b></p>
-    <p><b>Part B:</b> Cuba 25×20 — 100÷25=4 (arah x), 100÷20=5 (arah y) → 4×5 = <b>20 kotak</b> (lebih baik!)</p>
-    <p style="color:var(--text-muted); font-size:12px;">Susunan berputar (20 kotak) lebih efisien berbanding susunan asal (16 kotak) — jimat lebih banyak ruang palet.</p>
+    <p><b>Part A:</b> 100÷25 = 4 boxes across, 4×4 = <b>16 boxes</b></p>
+    <p><b>Part B:</b> Try 25×20 — 100÷25=4 (x-direction), 100÷20=5 (y-direction) → 4×5 = <b>20 boxes</b> (better!)</p>
+    <p style="color:var(--text-muted); font-size:12px;">The rotated arrangement (20 boxes) is more efficient than the original arrangement (16 boxes) — it saves more pallet space.</p>
   </div>
 
 </div>
@@ -100,10 +100,10 @@
 <div id="modal-overlay" class="modal-overlay">
   <div class="modal-box">
     <h3>🔒 Check Answers Access</h3>
-    <p>Hint: Password ialah jawapan anda untuk Part A (tanpa unit)</p>
-    <input type="text" id="password-input" class="q-input" placeholder="Masukkan password" />
+    <p>Hint: The password is your answer for Part A (without units)</p>
+    <input type="text" id="password-input" class="q-input" placeholder="Enter password" />
     <div class="modal-actions">
-      <button id="modal-cancel" class="btn btn-secondary">Batal</button>
+      <button id="modal-cancel" class="btn btn-secondary">Cancel</button>
       <button id="modal-check" class="btn btn-success">✓ Check</button>
     </div>
   </div>
@@ -135,7 +135,7 @@
         timeSpentSec: 0
       });
     } else {
-      alert("Password salah. Cuba selesaikan Part A dahulu!");
+      alert("Incorrect password. Try solving Part A first!");
     }
   });
 </script>
