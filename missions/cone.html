@@ -22,18 +22,24 @@
       <a-entity id="cone-group" position="0 0 0" scale="0.5 0.5 0.5">
 
         <!-- Bentuk pepejal (r=5cm, h=12cm, slant=13cm — skala 0.08) -->
-        <a-cone id="cone-solid" radius-bottom="0.4" radius-top="0" height="0.96" material="color: #38bdf8; emissive: #38bdf8; emissiveIntensity: 0.22; roughness: 0.3; metalness: 0.15; opacity: 1"></a-cone>
+        <a-cone id="cone-solid" radius-bottom="0.4" radius-top="0" height="0.96" material="color: #f97316; emissive: #f97316; emissiveIntensity: 0.22; roughness: 0.3; metalness: 0.15; opacity: 1"></a-cone>
 
-        <!-- Net: tapak bulat + sektor (permukaan melengkung "dibuka rata") -->
-        <a-circle id="cone-base"   radius="0.4" material="color: #a855f7; emissive: #a855f7; emissiveIntensity: 0.22; roughness: 0.3; metalness: 0.15; opacity: 1" side="double"
-                  rotation="-90 0 0" visible="false"></a-circle>
+        <!-- Net: sektor (kipas, apex atas — arc bawah) + tapak bulat
+             tersambung di bawah, susunan standard macam gambar rujukan -->
+        <a-circle id="cone-base"   radius="0.4" material="color: #f97316; emissive: #f97316; emissiveIntensity: 0.22; roughness: 0.3; metalness: 0.15; opacity: 1" side="double"
+                  visible="false"></a-circle>
         <!--
           Nota teknikal: sektor ni ANGGARAN permukaan melengkung kon yang
           "dibuka rata" — sudut sektor = (r/slant) × 360°. Guna a-circle
-          dengan theta-length (A-Frame sokong ni terus, elak perlu custom mesh)
+          dengan theta-length (A-Frame sokong ni terus, elak perlu custom mesh).
+          theta-start=201 supaya "arc" (lengkung) menghadap ke BAWAH dan
+          "apex" (hujung tirus) di ATAS — sama macam kipas dalam gambar rujukan.
         -->
-        <a-circle id="cone-sector" radius="1.04" theta-length="138" material="color: #ec4899; emissive: #ec4899; emissiveIntensity: 0.22; roughness: 0.3; metalness: 0.15; opacity: 1" side="double"
+        <a-circle id="cone-sector" radius="1.04" theta-start="201" theta-length="138" material="color: #f97316; emissive: #f97316; emissiveIntensity: 0.22; roughness: 0.3; metalness: 0.15; opacity: 1" side="double"
                   visible="false"></a-circle>
+
+        <!-- Dekorasi "aiskrim" — tersembunyi, muncul dalam mod Contoh Sebenar -->
+        <a-sphere id="icecream-scoop" radius="0.32" position="0 0.66 0" color="#fce7f3" visible="false"></a-sphere>
 
         <a-animation id="auto-spin" attribute="rotation" to="0 360 0" dur="8000" easing="linear" repeat="indefinite"></a-animation>
       </a-entity>
@@ -49,7 +55,7 @@
   </div>
 
   <div class="overlay-top">
-    <a href="../index.html" class="back-btn">←</a>
+    <a href="../index.html" class="menu-btn">🏠 Menu</a>
     <span class="mission-badge">MISSION 05 / 06</span>
   </div>
 
@@ -63,26 +69,31 @@
     <div class="stat"><b>1</b><span>Vertices</span></div>
   </div>
 
-  <div class="marker-hint"><span class="dot"></span> Awaiting marker — arahkan kamera ke Hiro marker</div>
+  <div class="marker-hint"><span class="dot"></span> Awaiting marker — point camera at Hiro marker</div>
 
   <div class="action-bar">
-    <button id="rotate-left-btn" class="btn btn-rotate">⟲</button>
-    <button id="unfold-btn" class="btn btn-primary">📐 Unfold Net</button>
-    <button id="rotate-right-btn" class="btn btn-rotate">⟳</button>
+    <button id="rotate-up-btn" class="btn btn-rotate">▲</button>
+    <div class="rotate-row">
+      <button id="rotate-left-btn" class="btn btn-rotate">⟲</button>
+      <button id="unfold-btn" class="btn btn-primary">📐 Unfold Net</button>
+      <button id="rotate-right-btn" class="btn btn-rotate">⟳</button>
+    </div>
+    <button id="rotate-down-btn" class="btn btn-rotate">▼</button>
   </div>
 
-  <button id="show-quiz-btn" class="show-quiz-btn">📝 Jawab Quiz Bila Anda Sedia</button>
+  <button id="reallife-btn" class="reallife-btn">🌍 View Real-Life Example</button>
+  <button id="show-quiz-btn" class="show-quiz-btn">📝 Answer Quiz When Ready</button>
 
   <div id="quiz-panel" class="quiz-panel">
     <div class="quiz-handle"></div>
     <span class="quiz-label">Application Challenge</span>
     <div class="quiz-question">
-      Kon aiskrim dibuat dari kertas berlapis. Jejari kon <b>5cm</b>, tinggi sisi (slant) <b>13cm</b>.
-      Berapakah luas kertas diperlukan untuk permukaan melengkung sahaja (cm²)? Guna π = 3.14
+      An ice cream cone is made from layered paper. The cone has a radius of <b>5cm</b> and slant height of <b>13cm</b>.
+      How much paper is needed for just the curved surface (cm²)? Use π = 3.14
     </div>
-    <div class="quiz-formula">Luas Melengkung = πrl</div>
+    <div class="quiz-formula">Curved Surface Area = πrl</div>
     <div class="quiz-input-row">
-      <input type="number" id="quiz-answer" placeholder="Jawapan dalam cm²" />
+      <input type="number" id="quiz-answer" placeholder="Answer in cm²" />
       <button id="check-answer-btn" class="btn btn-success">✓ Check</button>
     </div>
     <div id="quiz-feedback" class="feedback"></div>
@@ -98,16 +109,24 @@
     studentName: localStorage.getItem("geosight_student_name") || "Guest",
     groupId: "cone-group",
     autoSpinId: "auto-spin",
+
+    realLife: {
+      targetIds: ["cone-solid"],
+      material: "color: #d2a679; emissive: #d2a679; emissiveIntensity: 0.1; roughness: 0.6; metalness: 0; opacity: 1",
+      extraIds: ["icecream-scoop"]
+    },
+
+    edgeIds: ["cone-solid", "cone-base", "cone-sector"],
     mode: "reveal",
 
     solidId: "cone-solid",
     netPieces: [
-      { id: "cone-base",   unfoldedPos: "0 -1.2 0" },
-      { id: "cone-sector", unfoldedPos: "1.4 0 0" }
+      { id: "cone-base",   unfoldedPos: "0 -0.9 0" },
+      { id: "cone-sector", unfoldedPos: "0 0.5 0" }
     ],
 
     quiz: {
-      question: "Luas melengkung kon jejari 5cm, slant 13cm",
+      question: "Curved surface area of cone, radius 5cm, slant 13cm",
       correctAnswer: 204.1,
       formulaHint: "Luas Melengkung = πrl → 3.14 × 5 × 13",
       explanation: "πrl = 3.14 × 5 × 13 = 204.1 cm²"
