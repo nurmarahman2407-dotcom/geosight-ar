@@ -22,15 +22,20 @@
       <a-entity id="cylinder-group" position="0 0 0" scale="0.5 0.5 0.5">
 
         <!-- Bentuk pepejal (nampak semasa "folded") -->
-        <a-cylinder id="cyl-solid" radius="0.4" height="0.8" material="color: #22d3ee; emissive: #22d3ee; emissiveIntensity: 0.22; roughness: 0.3; metalness: 0.15; opacity: 1"></a-cylinder>
+        <a-cylinder id="cyl-solid" radius="0.4" height="0.8" material="color: #a855f7; emissive: #a855f7; emissiveIntensity: 0.22; roughness: 0.3; metalness: 0.15; opacity: 1"></a-cylinder>
 
-        <!-- Komponen net (tersembunyi sampai "Unfold" ditekan) -->
+        <!-- Komponen net (tersembunyi sampai "Unfold" ditekan) — susunan
+             STANDARD buku teks: bulatan-segiempat-bulatan bertindih menegak,
+             semua MENGHADAP kamera (bukan terbaring rata) -->
         <a-circle id="cyl-top"    radius="0.4" material="color: #a855f7; emissive: #a855f7; emissiveIntensity: 0.22; roughness: 0.3; metalness: 0.15; opacity: 1" side="double"
-                  rotation="-90 0 0" visible="false"></a-circle>
+                  visible="false"></a-circle>
         <a-circle id="cyl-bottom" radius="0.4" material="color: #a855f7; emissive: #a855f7; emissiveIntensity: 0.22; roughness: 0.3; metalness: 0.15; opacity: 1" side="double"
-                  rotation="-90 0 0" visible="false"></a-circle>
-        <a-plane  id="cyl-side"   width="2.51" height="0.8" material="color: #ec4899; emissive: #ec4899; emissiveIntensity: 0.22; roughness: 0.3; metalness: 0.15; opacity: 1" side="double"
+                  visible="false"></a-circle>
+        <a-plane  id="cyl-side"   width="2.51" height="0.8" material="color: #a855f7; emissive: #a855f7; emissiveIntensity: 0.22; roughness: 0.3; metalness: 0.15; opacity: 1" side="double"
                   visible="false"></a-plane>
+
+        <!-- Dekorasi "label tin soda" — tersembunyi, muncul dalam mod Contoh Sebenar -->
+        <a-cylinder id="can-label" radius="0.41" height="0.35" color="#0ea5e9" visible="false"></a-cylinder>
 
         <a-animation id="auto-spin" attribute="rotation" to="0 360 0" dur="8000" easing="linear" repeat="indefinite"></a-animation>
       </a-entity>
@@ -46,7 +51,7 @@
   </div>
 
   <div class="overlay-top">
-    <a href="../index.html" class="back-btn">←</a>
+    <a href="../index.html" class="menu-btn">🏠 Menu</a>
     <span class="mission-badge">MISSION 03 / 06</span>
   </div>
 
@@ -60,26 +65,31 @@
     <div class="stat"><b>0</b><span>Vertices</span></div>
   </div>
 
-  <div class="marker-hint"><span class="dot"></span> Awaiting marker — arahkan kamera ke Hiro marker</div>
+  <div class="marker-hint"><span class="dot"></span> Awaiting marker — point camera at Hiro marker</div>
 
   <div class="action-bar">
-    <button id="rotate-left-btn" class="btn btn-rotate">⟲</button>
-    <button id="unfold-btn" class="btn btn-primary">📐 Unfold Net</button>
-    <button id="rotate-right-btn" class="btn btn-rotate">⟳</button>
+    <button id="rotate-up-btn" class="btn btn-rotate">▲</button>
+    <div class="rotate-row">
+      <button id="rotate-left-btn" class="btn btn-rotate">⟲</button>
+      <button id="unfold-btn" class="btn btn-primary">📐 Unfold Net</button>
+      <button id="rotate-right-btn" class="btn btn-rotate">⟳</button>
+    </div>
+    <button id="rotate-down-btn" class="btn btn-rotate">▼</button>
   </div>
 
-  <button id="show-quiz-btn" class="show-quiz-btn">📝 Jawab Quiz Bila Anda Sedia</button>
+  <button id="reallife-btn" class="reallife-btn">🌍 View Real-Life Example</button>
+  <button id="show-quiz-btn" class="show-quiz-btn">📝 Answer Quiz When Ready</button>
 
   <div id="quiz-panel" class="quiz-panel">
     <div class="quiz-handle"></div>
     <span class="quiz-label">Application Challenge</span>
     <div class="quiz-question">
-      Tangki air berbentuk silinder perlu diisi penuh. Jejari tangki <b>4cm</b>, tinggi <b>10cm</b>.
-      Berapakah isipadu air (cm³)? Guna π = 3.14
+      A cylindrical water tank needs to be filled to the top. The tank has a radius of <b>4cm</b> and height of <b>10cm</b>.
+      What is the volume of water (cm³)? Use π = 3.14
     </div>
     <div class="quiz-formula">V = πr²h</div>
     <div class="quiz-input-row">
-      <input type="number" id="quiz-answer" placeholder="Jawapan dalam cm³" />
+      <input type="number" id="quiz-answer" placeholder="Answer in cm³" />
       <button id="check-answer-btn" class="btn btn-success">✓ Check</button>
     </div>
     <div id="quiz-feedback" class="feedback"></div>
@@ -95,17 +105,25 @@
     studentName: localStorage.getItem("geosight_student_name") || "Guest",
     groupId: "cylinder-group",
     autoSpinId: "auto-spin",
+
+    realLife: {
+      targetIds: ["cyl-solid"],
+      material: "color: #cbd5e1; emissive: #cbd5e1; emissiveIntensity: 0.05; roughness: 0.2; metalness: 0.9; opacity: 1",
+      extraIds: ["can-label"]
+    },
+
+    edgeIds: ["cyl-solid", "cyl-top", "cyl-bottom", "cyl-side"],
     mode: "reveal",
 
     solidId: "cyl-solid",
     netPieces: [
-      { id: "cyl-top",    unfoldedPos: "0 0.9 0" },
-      { id: "cyl-bottom", unfoldedPos: "0 -0.9 0" },
-      { id: "cyl-side",   unfoldedPos: "1.6 0 0" }
+      { id: "cyl-top",    unfoldedPos: "0 0.8 0" },
+      { id: "cyl-bottom", unfoldedPos: "0 -0.8 0" },
+      { id: "cyl-side",   unfoldedPos: "0 0 0" }
     ],
 
     quiz: {
-      question: "Isipadu silinder jejari 4cm, tinggi 10cm",
+      question: "Volume of cylinder, radius 4cm, height 10cm",
       correctAnswer: 502.4,
       formulaHint: "V = πr²h → 3.14 × 4² × 10",
       explanation: "V = πr²h = 3.14 × 16 × 10 = 502.4 cm³"
